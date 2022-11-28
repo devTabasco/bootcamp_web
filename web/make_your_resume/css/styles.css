@@ -1,0 +1,14 @@
+body {
+    background-color: #DEF5E5;
+}
+
+div {
+    width: 100;
+    text-align: center;
+    height: 100%;
+    margin: 10% auto;
+}
+
+input {
+    margin-bottom: 10px;
+}
