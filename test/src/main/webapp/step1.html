@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>MEMBER JOIN</title>
+<script type="text/javascript" src="resources/js/common.js"></script>
+<script>
+	function resistration() {
+		const form = createForm("", "MemberJoin", "post");
+
+		let group = [];
+		group.push(document.getElementsByName("groupName")[0]);
+		group.push(document.getElementsByName("groupCeo")[0]);
+		group.push(document.getElementsByName("groupPin")[0]);
+
+		for (let i = 0; i < group.length; i++) {
+			submitResult = lengthCheck(group[i]);
+			if (submitResult) {
+				form.appendChild(group[i])
+			} else {
+				break;
+			}
+		}
+
+		if (submitResult) {
+			document.body.appendChild(form);
+			form.submit();
+		}
+	}
+
+	function movePrePage() {
+		alert("movePrePage function");
+	}
+</script>
+</head>
+<body>
+	<input type="text" name="groupName" placeholder="GROUP NAME" />
+	<input type="text" name="groupCeo" placeholder="CEO NAME" />
+	<input type="password" name="groupPin"
+		placeholder="ACCESS GROUP PIN NUMBER" />
+	<input type="button" value="등록" onClick="resistration()" />
+	<input type="button" value="취소" onclick="movePrePage()" />
+</body>
+</html>
