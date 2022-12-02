@@ -18,7 +18,7 @@ public class DataAccessObject {
 	public Connection openConnection() {
 		Connection connection = null;
 		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
+			Class.forName("oracle.jdbc.driver.OracleDriver"); //get jdbc Driver
 			connection = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.89:1521:xe", "posdba2", "1234");
 		} catch (ClassNotFoundException e) {
 			System.out.println("Error : OracleDriver None");

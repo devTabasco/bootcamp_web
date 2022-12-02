@@ -24,3 +24,10 @@ function createForm(name, action, method){
 	form.setAttribute("method", method);
 	return form;
 }
+	
+function moveMainPage(){
+	location.href = "/web-pos";
+}
+function movePrePage(previous){
+	location.href = "/web-pos/" + previous!=null?previous:"";
+}

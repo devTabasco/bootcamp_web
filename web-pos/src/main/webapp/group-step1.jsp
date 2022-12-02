@@ -1,3 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,13 +8,11 @@
 <script type="text/javascript" src="resources/js/common.js"></script>
 <script>
 	function serverCall() {
-		const form = createForm("", "MemberJoin", "post");
+		const form = createForm("", "GroupDupCheck", "get");
 		const joinDataLayer = document.getElementById("joinDataLayer");
 
 		let group = [];
 		group.push(document.getElementsByName("groupName")[0]);
-		group.push(document.getElementsByName("groupCeo")[0]);
-		group.push(document.getElementsByName("groupPin")[0]);
 
 		for (let i = 0; i < group.length; i++) {
 			submitResult = lengthCheck(group[i]);
@@ -33,13 +33,12 @@
 </head>
 <body>
 	<div id="joinDataLayer">
-		<input type="text" name="groupName" placeholder="GROUP NAME" /> 
-		<input type="text" name="groupCeo" placeholder="CEO NAME" /> <input
-			type="password" name="groupPin" placeholder="ACCESS GROUP PIN NUMBER" />
+		<input type="text" name="groupName" placeholder="GROUP NAME" />
+		<div id="messageZone">${param.message}</div>
 	</div>
-	<div id="join">
-		<input type="button" value="등록" onClick="serverCall()" />
-		<input type="button" value="메인" onclick="movePrePage()" />
+	<div id="joinEventLayer">
+		<input type="button" value="NEXT" onClick="serverCall()" />
+		<input type="button" value="MAIN" onclick="movePrePage()" />
 	</div>
 </body>
 </html>

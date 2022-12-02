@@ -1,5 +1,7 @@
 package services.registration;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.util.ArrayList;
 
@@ -30,6 +32,9 @@ public class Registration {
 		ActionBean action = new ActionBean();
 
 		switch (serviceCode) {
+		case 0:
+			action = this.groupNameDuplicateCheck();
+			break;
 		case 1:
 			action = this.memberJoinCtl();
 			break;
@@ -41,6 +46,46 @@ public class Registration {
 			break;
 		}
 
+		return action;
+	}
+
+	private ActionBean groupNameDuplicateCheck() {
+		ActionBean action = new ActionBean();
+		GroupBean groupBean = new GroupBean();
+		String page, message=null;
+		Boolean redirect;
+
+		groupBean.setGroupName(this.request.getParameter("groupName"));
+
+		// 2. dao allocation
+		RegDataAccessObject dao = new RegDataAccessObject();
+		Connection connection = dao.openConnection();
+		ArrayList<GroupBean> groupList = new ArrayList<GroupBean>();
+		
+		// select groupname
+		groupList = dao.getGroupName(connection, groupBean);
+
+		// dao close;
+		dao.closeConnection(connection);
+
+		if(groupList == null) {
+			this.request.setAttribute("groupName", groupBean.getGroupName());
+			page = "group-step2.jsp?previous=" + this.getRefererPage();
+			redirect = false;
+		}else {
+			page = "group-step1.jsp";
+			message = "이미 사용중인 그룹명입니다.";
+			redirect = true;
+		}
+		
+		if(message != null) {
+			try {
+				page += "?message="+ URLEncoder.encode(message, "UTF-8");
+			} catch (UnsupportedEncodingException e) {e.printStackTrace();}
+		}
+		action.setPage(page);
+		action.setRedirect(redirect);
+		
 		return action;
 	}
 
@@ -79,7 +124,7 @@ public class Registration {
 		dao.closeConnection(connection);
 
 		request.setAttribute("groupCode", groupList.get(0).getGroupCode());
-		action.setPage(tran?"step2.jsp":"step1.html");
+		action.setPage(tran ? "step2.jsp" : "step1.html");
 		action.setRedirect(!tran);
 
 		return action;
@@ -105,4 +150,10 @@ public class Registration {
 	private boolean convertToBoolean(int value) {
 		return value > 0 ? true : false;
 	}
+	
+	/* Referer Page 추출 */
+	private String getRefererPage() {
+		return this.request.getHeader("referer").substring(this.request.getHeader("referer").lastIndexOf('/')+1);
+	}
+	
 }

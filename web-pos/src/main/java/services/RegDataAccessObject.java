@@ -34,6 +34,36 @@ public class RegDataAccessObject extends DataAccessObject{
 		return result;
 	}
 	
+	//select GroupName
+	public ArrayList<GroupBean> getGroupName(Connection connection, GroupBean group) {
+		GroupBean groupBaen = null;
+		ArrayList<GroupBean> groupList = null;
+		String query = "SELECT SG_NAME AS GROUPNAME FROM SG WHERE SG_NAME = ?";
+		
+		try {
+			this.ps = connection.prepareStatement(query);
+			ps.setNString(1, group.getGroupName());
+			
+			this.rs = this.ps.executeQuery();
+			
+			if(this.rs.isBeforeFirst()) {
+				groupList = new ArrayList<GroupBean>();
+			
+				while (this.rs.next()) {
+					groupBaen = new GroupBean();
+					groupBaen.setGroupName(this.rs.getNString("GROUPNAME"));
+					groupList.add(groupBaen);
+				}
+			
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return groupList;
+	}
+	
 	//select GroupCode
 	public ArrayList<GroupBean> getGroupCode(Connection connection, GroupBean group) {
 		GroupBean groupBaen = new GroupBean();
@@ -46,7 +76,7 @@ public class RegDataAccessObject extends DataAccessObject{
 			
 			this.rs = this.ps.executeQuery();
 			
-			if(this.rs != null) {
+			if(this.rs.isBeforeFirst()) {
 				groupList = new ArrayList<GroupBean>();
 			
 				while (this.rs.next()) {
@@ -70,6 +100,7 @@ public class RegDataAccessObject extends DataAccessObject{
 		
 		return result;
 	}
+	
 	//insert Categorise
 	public int insStoreCategories(Connection connection) {
 		int result = 0;
