@@ -8,7 +8,7 @@
 <script src="resources/js/common.js"></script>
 <script>
 function registration(){
-	const form = createForm("", "MemberJoin", "get");	
+	const form = createForm("", "MemberJoin", "post");	
 	const joinDataLayer = document.getElementById("joinDataLayer");
 	let group = [];
 	let submitResult = false;
@@ -29,6 +29,30 @@ function registration(){
 	}
 }
 
+/*
+function serverCall() {
+	const form = createForm("", "DeleteTemp", "get");
+	const joinDataLayer = document.getElementById("joinDataLayer");
+
+	let group = [];
+	group.push(document.getElementsByName("groupName")[0]);
+
+	for (let i = 0; i < group.length; i++) {
+		submitResult = lengthCheck(group[i]);
+		if (submitResult) {
+			form.appendChild(group[i])
+		} else {
+			break;
+		}
+	}
+
+	if (submitResult) {
+		joinDataLayer.appendChild(form);
+		form.submit();
+	}
+}
+*/
+
 </script>
 
 </head>
@@ -40,8 +64,8 @@ function registration(){
   </div>
   <div id="joinEventLayer">
   	<input type="button" value="NEXT"  onClick="registration()"/>
-  	<input type="button" value="PRE"  onClick="movePrePage('${param.previous}')"/>
-  	<input type="button" value="MAIN"  onClick="moveMainPage()"/>
+  	<input type="button" value="PRE"  onClick="movePage('${param.previous}')"/>
+  	<input type="button" value="MAIN"  onClick="movePage('index.html')"/>
   </div>
 </body>
 </html>

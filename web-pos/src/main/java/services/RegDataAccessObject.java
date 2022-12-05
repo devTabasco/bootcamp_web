@@ -38,7 +38,7 @@ public class RegDataAccessObject extends DataAccessObject{
 	public ArrayList<GroupBean> getGroupName(Connection connection, GroupBean group) {
 		GroupBean groupBaen = null;
 		ArrayList<GroupBean> groupList = null;
-		String query = "SELECT SG_NAME AS GROUPNAME FROM SG WHERE SG_NAME = ?";
+		String query = "SELECT GROUPNAME FROM DUPGROUPNAME WHERE GROUPNAME = ?";
 		
 		try {
 			this.ps = connection.prepareStatement(query);
@@ -92,6 +92,51 @@ public class RegDataAccessObject extends DataAccessObject{
 		}
 		
 		return groupList;
+	}
+	/* insert구문 순서
+	 * 
+	 * 1. dml작성
+	 * 2. connection.prepareStatement 준비
+	 * 3. prepareStatement 에 set
+	 * 4. prepareStatement.excuteUpdate > int형으로 return
+	 * 
+	 * */
+	
+	
+	//insert temp
+	public int insTemp(Connection connection, GroupBean group) {
+		int result = 0;
+		
+		String dml = "INSERT INTO TEMP(TEMP_GROUPNAME) "
+				+ "VALUES(?)";
+		
+		try {
+			this.ps = connection.prepareStatement(dml);
+			ps.setNString(1, group.getGroupName());
+			
+			result = this.ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+	
+	public int deleteTemp(Connection connection, GroupBean group) {
+		int result = 0;
+		
+		String dml = "DELETE FROM TEMP WHERE TEMP_GROUPNAME = ?";
+		
+		try {
+			this.ps = connection.prepareStatement(dml);
+			ps.setNString(1, group.getGroupName());
+			
+			result = this.ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return result;
 	}
 	
 	//insert Stores

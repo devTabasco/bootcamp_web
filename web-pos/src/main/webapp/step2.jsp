@@ -9,5 +9,6 @@
 <body>
 	<h1>회원가입 step2</h1>
 	${groupCode} <!-- EL -->
+	${groupName}
 </body>
 </html>

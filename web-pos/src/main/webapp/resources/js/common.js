@@ -31,3 +31,26 @@ function moveMainPage(){
 function movePrePage(previous){
 	location.href = "/web-pos/" + previous!=null?previous:"";
 }
+
+/* Input Box 생성*/
+function createInputBox(type, name, value, placeholder){
+	const input = document.createElement("input");
+	input.setAttribute("type", type);
+	input.setAttribute("name", name);
+	if(value != "") input.setAttribute("value", value);
+	if(placeholder != "") input.setAttribute("placeholde", placeholder);
+	return input;
+}
+ 
+/* 페이지 이동 */
+function movePage(targetPage){
+	const form = createForm("", "MovePage", "post");
+	const groupName = createInputBox("hidden", "groupName", document.getElementsByName("groupName")[0].value, "");
+	const input = createInputBox("hidden", "target", targetPage, "");
+	
+	form.appendChild(groupName);
+	form.appendChild(input);
+	document.body.appendChild(form);
+	
+	form.submit();	
+}

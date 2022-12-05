@@ -17,7 +17,7 @@ import services.registration.Registration;
 /**
  * Servlet implementation class FrontController
  */
-@WebServlet({"/GroupDupCheck","/MemberJoin", "/RegStore", "/RegEmp", "/Access", "/AccessOut"})
+@WebServlet({"/MovePage", "/GroupDupCheck","/MemberJoin", "/RegStore", "/RegEmp", "/Access", "/AccessOut"})
 public class FrontController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -41,6 +41,12 @@ public class FrontController extends HttpServlet {
 		if(jobCode.equals("GroupDupCheck")) {
 			registration = new Registration();
 			action = registration.backController(0, request); 
+		}else if(jobCode.equals("MovePage")) {
+			registration = new Registration();
+			action = registration.backController(-1, request);
+		}else if(jobCode.equals("MemberJoin")) {
+			registration = new Registration();
+			action = registration.backController(1, request);
 		}
 		
 		if(action.isRedirect()) {
@@ -58,9 +64,6 @@ public class FrontController extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		request.setCharacterEncoding("UTF-8"); //post 전송 시에만 가능
-//		System.out.println(request.getParameter("groupName"));
-//		System.out.println(request.getParameter("groupCeo"));
-//		System.out.println(request.getParameter("groupPin"));
 //		doGet(request, response);
 		ActionBean action = null;
 		String jobCode = request.getRequestURI().substring(request.getContextPath().length()+1);
@@ -85,11 +88,15 @@ public class FrontController extends HttpServlet {
 		}else if(jobCode.equals("GroupDupCheck")) {
 			registration = new Registration();
 			action = registration.backController(0, request); 
+		}else if(jobCode.equals("MovePage")) {
+			registration = new Registration();
+			action = registration.backController(-1, request);
 		}
 		
 		if(action.isRedirect()) {
 			response.sendRedirect(action.getPage());
 		}else {
+			System.out.println("test");
 			RequestDispatcher dispatcher = request.getRequestDispatcher(action.getPage());
 			dispatcher.forward(request, response);
 		}
