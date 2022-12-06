@@ -1,10 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>MEMBER JOIN</title>
+<link rel="stylesheet" href="resources/css/main.css">
 <script type="text/javascript" src="resources/js/common.js"></script>
 <script>
 	function serverCall() {
@@ -28,17 +29,30 @@
 			form.submit();
 		}
 	}
-	
 </script>
 </head>
 <body>
-	<div id="joinDataLayer">
-		<input type="text" name="groupName" placeholder="GROUP NAME" />
-		<div id="messageZone">${param.message}</div>
+	<div class="nav">
+		<h1>코드헌트</h1>
+		<p>정현우 :: 임창용 :: 박건호 :: 정영준</p>
 	</div>
-	<div id="joinEventLayer">
-		<input type="button" value="NEXT" onClick="serverCall()" />
-		<input type="button" value="MAIN" onclick="movePrePage()" />
+	<div class="main">
+		<div class="contents">
+			<h1 class="logo">코드헌트</h1>
+			<div class="container">
+				<div id="joinDataLayer">
+					<input type="text" name="groupName" placeholder="GROUP NAME" />
+					<div id="messageZone">${param.message}</div>
+				</div>
+				<div>
+					<div id="joinEventLayer">
+						<input id="login" type="button" value="NEXT" onClick="serverCall()" /> 
+						<input id="login" type="button" value="MAIN" onclick="movePrePage()" />
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
+	<div class="footer"></div>
 </body>
 </html>

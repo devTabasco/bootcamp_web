@@ -3,39 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <title>CSS example</title>
-<link rel="stylesheet" href="resources/css/styles.css">
-<style type="text/css">
-body{
-	margin:0;
-}
-#header{
-	height: 10vh;
-	width: 100%;
-	background-color: #CFF5E7;
-}
-#content1{
-	height: 70vh;
-	width: 20%;
-	float:left;
-	background-color: #A0E4CB;
-}
-#content2{
-	height: 70vh;
-	width: 80%;
-	float:right;
-	background-color: #59C1BD;
-}
-#footer{
-	clear: both;
-	height: 10vh;
-	width: 100%;
-	background-color: #0D4C92;
-}
-</style>
+<link rel="stylesheet" href="resources/css/serve.css">
 </head>
 <body>
-	<div id="header"></div>
-	<div id="content1"></div>
+	<div id="header">
+			<h2 id="menu-name">종합분석</h2>
+			<div id="logout">
+				<a href="index.html"><button>로그아웃</button> </a>
+			</div>
+	</div>
+	<div id="content1">
+		<div id="storeName">
+			<p>매장이름</p>
+		</div>
+	<ul class="menu">	
+      <li>
+        <a href="#">매출관리</a>
+        <ul class="submenu">
+          <li><a href="#">종합분석</a></li>
+          <li><a href="#">일자별 매출</a></li>
+          <li><a href="#">상품별 매출</a></li>
+          <li><a href="#">요일별 매출</a></li>
+          <li><a href="#">결제별 매출</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="pos.html">상품관리</a>
+        <ul class="submenu">
+          <li><a href="#">submenu01</a></li>
+          <li><a href="#">submenu02</a></li>
+          <li><a href="#">submenu03</a></li>
+          <li><a href="#">submenu04</a></li>
+          <li><a href="#">submenu05</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#">고객관리</a>
+        <ul class="submenu">
+          <li><a href="#">submenu01</a></li>
+          <li><a href="#">submenu02</a></li>
+          <li><a href="#">submenu03</a></li>
+          <li><a href="#">submenu04</a></li>
+          <li><a href="#">submenu05</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#">매장관리</a>
+        <ul class="submenu">
+          <li><a href="#">submenu01</a></li>
+          <li><a href="#">submenu02</a></li>
+          <li><a href="#">submenu03</a></li>
+          <li><a href="#">submenu04</a></li>
+          <li><a href="#">submenu05</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#">직원관리</a>
+        <ul class="submenu">
+          <li><a href="#">submenu01</a></li>
+          <li><a href="#">submenu02</a></li>
+          <li><a href="#">submenu03</a></li>
+          <li><a href="#">submenu04</a></li>
+          <li><a href="#">submenu05</a></li>
+        </ul>
+      </li>
+    </ul>
+	</div>
 	<div id="content2"></div>
 	<div id="footer"></div>
 </body>

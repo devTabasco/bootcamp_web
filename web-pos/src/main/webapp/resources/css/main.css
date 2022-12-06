@@ -1,0 +1,88 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=La+Belle+Aurore&display=swap');
+/* 첫화면, 회원가입, 로그인 */
+
+body {
+	margin: 0;
+}
+
+#menu-name{
+	position: absolute;
+	margin-top: 30px;
+	margin-left: 50%;
+	color: white;
+}
+
+h1, p{
+	padding-top: 5px;
+	text-align: center;
+	margin: 0;
+	color:blanchedalmond
+}
+
+.nav {
+	height: 10vh;
+	width: 100%;
+	background-color: #373957;
+}
+
+.footer {
+	position: fixed;
+	height: 10vh;
+	width: 100%;
+	background-color: #373957;
+}
+
+.main{
+	background-image: url("../images/codehunt.png");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+	height: 80vh;
+	display: flex;
+	justify-content: center;
+    align-items: center;
+}
+
+.contents {
+	background-color: rgba(70, 87, 117, 0.9);
+    width: 250px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+}
+
+.logo {
+	font-size:50px;
+	font-family: 'La Belle Aurore', cursive;
+	color: white;
+    margin : 0;
+    padding: 0;
+}
+
+#login {
+	float: left;
+    width: 40%;
+	margin: 0 5%;
+	margin-top: 10px;
+    background-color: skyblue;
+    border-color: transparent;
+    color: white;
+}
+
+.account, .sign-up {
+    display: block;
+    margin-bottom: 3px;
+    padding: 3px;
+    border: 1px solid lightgray;
+    border-radius: 3px;
+}
+
+#alert {
+    border-color: transparent;
+}
+

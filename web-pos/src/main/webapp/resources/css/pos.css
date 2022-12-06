@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=La+Belle+Aurore&display=swap');
+
+body{
+	margin:0;
+}
+#header{
+	position: relative;
+	height: 10vh;
+	width: 100%;
+	background-color: #373957;
+}
+
+#content1{
+	height: 90vh;
+	width: 10%;
+	float:left;
+	background-color: green;
+}
+#content2{
+    position: relative;
+	height: 90vh;
+	width: 60%;
+	float:left;
+	background-color: white;
+}
+#content3{
+    position: relative;
+	height: 90vh;
+	width: 30%;
+	float:left;
+	background-color: black;
+}
+
+.category{
+    text-align: center;
+    width: 100px;
+    margin: 10px;
+    display: inline-block;
+    border: 1px solid black;
+}
+
+.category-bar{
+    padding: 10px;
+    border-bottom: 2px solid black;
+}
+
+.menu{
+    text-align: center;
+    border: 1px solid black;
+    width: 150px;
+    height: 150px;
+    margin: 10px;
+    float: left;
+}
+
+.bottom-menu{
+    width: 100%;
+    bottom: 0;
+    position: absolute;
+}
+
+.bottom-menu-content{
+    text-align: center;
+    background-color: #d6d318;
+    float: left;
+    height: 50px;
+    width: 50%;
+    border: 1px solid black;
+    box-sizing: border-box;
+    line-height: 49px;
+}
+
+.bottom-menu-content2{
+    text-align: center;
+    display: inline-block;
+    background-color: #d6d318;
+    height: 50px;
+    width: 100%;
+    border: 1px solid black;
+    box-sizing: border-box;
+    line-height: 49px;
+}
