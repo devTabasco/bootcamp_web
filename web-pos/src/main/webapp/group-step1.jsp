@@ -38,16 +38,16 @@
 	</div>
 	<div class="main">
 		<div class="contents">
-			<h1 class="logo">코드헌트</h1>
+			<h1 class="logo">CodeHunt</h1>
 			<div class="container">
 				<div id="joinDataLayer">
-					<input type="text" name="groupName" placeholder="GROUP NAME" />
+					<input type="text" name="groupName" id="id" class="account" placeholder="GROUP NAME" />
 					<div id="messageZone">${param.message}</div>
 				</div>
 				<div>
 					<div id="joinEventLayer">
-						<input id="login" type="button" value="NEXT" onClick="serverCall()" /> 
-						<input id="login" type="button" value="MAIN" onclick="movePrePage()" />
+						<input id="login" class="account" type="button" value="NEXT" onClick="serverCall()" /> 
+						<input id="login" class="account" type="button" value="MAIN" onclick="movePrePage()" />
 					</div>
 				</div>
 			</div>

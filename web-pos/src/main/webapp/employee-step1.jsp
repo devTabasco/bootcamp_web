@@ -9,14 +9,14 @@
 <link rel="stylesheet" href="resources/css/main.css">
 <script>
 	function registration() {
-		const form = createForm("", "MemberJoin", "post");
+		const form = createForm("", "RegEmp", "get");
 		const joinDataLayer = document.getElementById("joinDataLayer");
 		let group = [];
 		let submitResult = false;
 
-		group.push(document.getElementsByName("groupName")[0]);
-		group.push(document.getElementsByName("groupCeo")[0]);
-		group.push(document.getElementsByName("groupPin")[0]);
+		group.push(document.getElementsByName("employeeGrade")[0]);
+		group.push(document.getElementsByName("employeeName")[0]);
+		group.push(document.getElementsByName("employeePin")[0]);
 
 		for (let idx = 0; idx < group.length; idx++) {
 			submitResult = lengthCheck(group[idx]);
@@ -31,30 +31,6 @@
 			form.submit();
 		}
 	}
-
-	/*
-	 function serverCall() {
-	 const form = createForm("", "DeleteTemp", "get");
-	 const joinDataLayer = document.getElementById("joinDataLayer");
-
-	 let group = [];
-	 group.push(document.getElementsByName("groupName")[0]);
-
-	 for (let i = 0; i < group.length; i++) {
-	 submitResult = lengthCheck(group[i]);
-	 if (submitResult) {
-	 form.appendChild(group[i])
-	 } else {
-	 break;
-	 }
-	 }
-
-	 if (submitResult) {
-	 joinDataLayer.appendChild(form);
-	 form.submit();
-	 }
-	 }
-	 */
 </script>
 
 </head>
@@ -68,9 +44,10 @@
 			<h1 class="logo">CodeHunt</h1>
 			<div class="container">
 				<div id="joinDataLayer">
-					<input type="text" name="groupName" id="id" class="account" value="${groupName}" placeholder="GROUP NAME" readOnly /> 
-					<input type="text" name="groupCeo" id="id" class="account" placeholder="CEO NAME" /> 
-					<input type="password" name="groupPin" id="password" class="account" placeholder="ACCESS GROUP PIN NUMBER" />
+					${storeCode}
+					<input type="text" name="employeeGrade" id="id" class="account" value="${employeeGrade}" placeholder="employee Grade" readOnly /> 
+					<input type="text" name="employeeName" id="id" class="account" placeholder="Employee Name" /> 
+					<input type="password" name="employeePin" id="password" class="account" placeholder="ACCESS Employee PIN NUMBER" />
 				</div>
 				<div id="joinEventLayer">
 					<input type="button" value="NEXT" id="login" class="account"

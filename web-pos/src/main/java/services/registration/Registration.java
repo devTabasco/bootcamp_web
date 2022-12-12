@@ -7,8 +7,13 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.jasper.compiler.NewlineReductionServletWriter;
+import org.eclipse.jdt.internal.compiler.ast.ThisReference;
+
 import beans.ActionBean;
+import beans.CategoriesBean;
 import beans.GroupBean;
+import beans.StoreBean;
 import services.RegDataAccessObject;
 
 /*
@@ -32,6 +37,9 @@ public class Registration {
 		ActionBean action = new ActionBean();
 
 		switch (serviceCode) {
+		case -2:
+			action = this.deleteStore();
+			break;
 		case -1:
 			action = this.deleteTemp();
 			break;
@@ -41,15 +49,75 @@ public class Registration {
 		case 1:
 			action = this.regGroupCtl();
 			break;
-		case 2:
-			this.RegStoreCtl();
-			break;
 		case 3:
+			this.RegEmpCtl();
+			break;
+		case 4:
+			this.RegEmpCtl();
+			break;
+		case 2: case 5:
+			action = this.RegStoreCtl();
+			break;
+		case 6:
 			this.RegEmpCtl();
 			break;
 		}
 
 		return action;
+	}
+	
+	private ActionBean moveGroup() {
+		ActionBean action = new ActionBean();
+		String page = "grStep1.jsp", message = null;
+		boolean redirect = true;
+		
+		action.setPage(page);
+		action.setRedirect(redirect);
+		
+		return action;
+	}
+	
+	private ActionBean deleteStore() {
+		ActionBean action = new ActionBean();
+		GroupBean groupBean = new GroupBean();
+		StoreBean storeBean = new StoreBean();
+		RegDataAccessObject dao = new RegDataAccessObject();
+		Connection connection = dao.openConnection();
+		String message = null, page = "group-step2.jsp";
+		Boolean redirect = false, tran = false;
+
+		storeBean.setStoreCode(this.request.getParameter("storeCode"));
+
+		// transaction control
+		dao.modifyTranStatus(connection, false);
+		dao.setTransaction(true, connection);
+
+		
+		tran = this.convertToBoolean(dao.deleteStore(connection, storeBean));
+		
+		dao.modifyTranStatus(connection, true);
+		// dao close;
+		dao.closeConnection(connection);
+		
+		if(tran) {
+			page = this.request.getParameter("target");
+			message = "새로 등록해주세요.";
+			redirect = true;
+		}else message = "네트워크오류:네트워크가 불안정합니다. 잠시 후 다시 시도해주세요";
+		
+		if (message != null) {
+			try {
+				page += "?message=" + URLEncoder.encode(message, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		action.setPage(page);
+		action.setRedirect(redirect);
+
+		return action;
+
 	}
 	
 	private ActionBean deleteTemp() {
@@ -77,7 +145,7 @@ public class Registration {
 			page = this.request.getParameter("target");
 			message = "그룹명을 새로 입력해주세요.";
 			redirect = true;
-		}else message = "네트워크가 불안정합니다. 잠시 후 다시 시도해주세요";
+		}else message = "네트워크오류:네트워크가 불안정합니다. 잠시 후 다시 시도해주세요";
 		
 		if (message != null) {
 			try {
@@ -122,7 +190,7 @@ public class Registration {
 				redirect = false;
 			} else {
 				page = "group-step1.jsp";
-				message = "네트워크가 불안정 합니다. 잠시 후 다시 시도해주세요.";
+				message = "네트워크오류:네트워크가 불안정 합니다. 잠시 후 다시 시도해주세요.";
 				redirect = true;
 			}
 		} else {
@@ -217,7 +285,7 @@ public class Registration {
 		if(tran) {
 			/* 2-2. additional */
 			dao.deleteTemp(connection, group);
-			page = "step2.jsp";
+			page = "store-step1.jsp";
 			redirect = tran;
 			
 			/* 2-3. [SEL] GROUPCODE */
@@ -226,8 +294,7 @@ public class Registration {
 			/* Dynamic Data(DB Data) >> Request */
 			request.setAttribute("groupCode", groupList.get(0).getGroupCode());
 			request.setAttribute("groupName", group.getGroupName());
-			System.out.println(groupList.get(0).getGroupName());
-		}else message = "네트워크가 불안정합니다. 잠시 후 다시 시도해주세요";
+		}else message = "네트워크오류:네트워크가 불안정합니다. 잠시 후 다시 시도해주세요";
 		
 		/* 2-4. Transaction End */
 		dao.setTransaction(tran, connection);
@@ -250,7 +317,120 @@ public class Registration {
 	}
 
 	private ActionBean RegStoreCtl() {
-
+		ActionBean action = new ActionBean();
+		String page = "group-step1.jsp", message = null;
+		boolean redirect = false;
+		RegDataAccessObject dao = new RegDataAccessObject();
+		String[][] levInfo = {{"L1", "그룹대표"},{"L2", "매니저"},{"L3", "직원"}};
+		
+		/* 1. req --> GroupBean */
+		/* Store info */
+		GroupBean group = new GroupBean();
+		StoreBean store = new StoreBean();
+		ArrayList<StoreBean> storeList = new ArrayList<StoreBean>();
+		
+		store.setStoreCode(this.request.getParameter("storeCode"));
+		store.setStoreName(this.request.getParameter("storeName"));
+		store.setStoreZip(this.request.getParameter("storeZipCode"));
+		store.setStoreAddr(this.request.getParameter("storeAddr"));
+		store.setStoreAddrDetail(this.request.getParameter("storeAddrDetails"));
+		store.setStorePhone(this.request.getParameter("storePhone"));
+		
+		storeList.add(store);
+		group.setGroupCode(this.request.getParameter("groupCode"));
+		
+		/* Default CategoriesInfo */
+		CategoriesBean category = new CategoriesBean();
+		ArrayList<CategoriesBean> categoryList = new ArrayList<CategoriesBean>();
+		
+//		category.setLevCode("L1");
+//		category.setLevName("그룹대표");
+//		categoryList.add(category);		
+//		category.setLevCode("L2");
+//		category.setLevName("매니저");
+//		categoryList.add(category);
+//		category.setLevCode("L3");
+//		category.setLevName("직원");
+//		categoryList.add(category);
+		
+		for(String[] lev : levInfo) {
+			category = new CategoriesBean();
+			category.setLevCode(lev[0]);
+			category.setLevName(lev[1]);
+			categoryList.add(category);
+		}
+		
+		store.setLevInfo(categoryList);		
+		group.setStoreInfoList(storeList);
+		
+		/* 2-0. Variable Declaration */
+		boolean tran = false;
+		/* 2. DAO Allocation & DAO Open */
+		dao = new RegDataAccessObject();
+		Connection connection = dao.openConnection();
+		/* 2-1. Transaction Start */
+		dao.modifyTranStatus(connection, false);
+		/* 2-2. [INS] STOREGROUP */
+		tran = this.convertToBoolean(dao.insStore(connection, group));
+		if(tran) {
+			/* 2-2. additional */
+			//this.
+			if(this.convertToBoolean(dao.insStoreLevel(connection, group))){
+				message = this.makeMessage(group);
+				//request에 담아 보낼때는 encoding 할필요 없음
+				this.request.setAttribute("message", message);
+				request.setAttribute("storeCode", this.request.getParameter("storeCode"));
+				request.setAttribute("levInfo", this.makeHTMLSelectBox(group));
+				page = "employee-step1.jsp";
+				redirect = tran;
+			}
+			/* Dynamic Data(DB Data) >> Request */
+//			request.setAttribute("groupName", group.getGroupName());
+		}
+		
+		/* 2-4. Transaction End */
+		dao.setTransaction(tran, connection);
+		dao.modifyTranStatus(connection, true);
+		/* 2-5. DAO Close */
+		dao.closeConnection(connection);
+		dao = null;
+				
+//		if (message != null) {
+//			try {
+//				page += "?message=" + URLEncoder.encode(message, "UTF-8");
+//			} catch (UnsupportedEncodingException e) {
+//				e.printStackTrace();
+//			}
+//		}
+		
+		action.setPage(page);
+		action.setRedirect(true);
+				
+		return action;
+	}
+	
+	//selectBox 코드 만들어주기
+	private String makeHTMLSelectBox(Object obj) {
+		StringBuffer select = new StringBuffer();
+		select.append("<select name=\"levelInfo\">");
+		for(CategoriesBean category : ((GroupBean)obj).getStoreInfoList().get(0).getLevInfo()) {
+			select.append("<option value=\""+ category.getLevCode() + "\">" + category.getLevName() + "</option>");
+		}
+		select.append("</select>");			
+		
+		return select.toString();
+	}
+	
+	//그룹, 스토어 빈을 받아서 메세지 만들어주기.
+	private String makeMessage(Object object) {
+		StringBuffer message = new StringBuffer();
+		GroupBean group = (GroupBean)object;
+		message.append("Store Infomation:");
+		message.append("[그룹코드] - " + group.getGroupCode());
+		message.append("\n[그룹명] - " + group.getGroupName());
+		message.append("\n[상점코드] - " + group.getStoreInfoList().get(0).getStoreCode());
+		message.append("\n[상점명] - " + group.getStoreInfoList().get(0).getStoreName());
+		
 		return null;
 	}
 

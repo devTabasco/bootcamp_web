@@ -17,6 +17,22 @@
 	return result;
 }
 
+function accessLengthCheck(obj) {
+	//서버로 전송할 데이터 길이의 유효성 판단
+	const data = [["storeCode",10] , ["employeeCode",3] , ["pin",6]];
+	let result = false;
+	for(let i=0;i<data.length;i++){
+		if(obj.getAttribute("name") == data[i][0]){
+			result = (obj.value.length == data[i][1])?true:false;
+			if(!result){
+				alert(data[i][0]+"가 "+data[i][1]+"자리가 맞는지 확인하세요.")
+			}
+			break;
+		}
+	}
+	return result;
+}
+
 function createForm(name, action, method){
 	const form = document.createElement("form");
 	if(name != "") form.setAttribute("name", name);
@@ -44,11 +60,18 @@ function createInputBox(type, name, value, placeholder){
  
 /* 페이지 이동 */
 function movePage(targetPage){
-	const form = createForm("", "MovePage", "post");
-	const groupName = createInputBox("hidden", "groupName", document.getElementsByName("groupName")[0].value, "");
 	const input = createInputBox("hidden", "target", targetPage, "");
+	if(targetPage == "grStep1.jsp"){
+		const form = createForm("", "MovePage", "post");
+		form.appendChild(createInputBox("hidden", "groupName", document.getElementsByName("groupName")[0].value, ""));
+	}else if(targetPage == "store-stpe1.jsp"){
+		const form = createForm("", "MovePageStore", "post");
+		form.appendChild(createInputBox("hidden", "storeCode", document.getElementsByName("storeCode")[0].value, ""));
+	}else if(targetPage == "MemberJoin"){
+		const form = createForm("", "MovePageStore", "post");
+		form.appendChild(createInputBox("hidden", "storeCode", document.getElementsByName("storeCode")[0].value, ""));
+	}
 	
-	form.appendChild(groupName);
 	form.appendChild(input);
 	document.body.appendChild(form);
 	

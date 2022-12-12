@@ -2,6 +2,7 @@ package controller;
 
 import java.awt.image.RescaleOp;
 import java.io.IOException;
+import java.sql.Connection;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -9,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.StyledEditorKit.BoldAction;
 
 import beans.ActionBean;
 import services.auth.Auth;
@@ -17,7 +19,7 @@ import services.registration.Registration;
 /**
  * Servlet implementation class FrontController
  */
-@WebServlet({"/MovePage", "/GroupDupCheck","/MemberJoin", "/RegStore", "/RegEmp", "/Access", "/AccessOut"})
+@WebServlet({"/MovePageStore","/MovePage", "/Join", "/GroupDupCheck","/MemberJoin", "/RegStore", "/RegEmp", "/Access", "/AccessOut"})
 public class FrontController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -47,6 +49,15 @@ public class FrontController extends HttpServlet {
 		}else if(jobCode.equals("MemberJoin")) {
 			registration = new Registration();
 			action = registration.backController(1, request);
+		}else if(jobCode.equals("Join")) {
+			registration = new Registration();
+			action = registration.backController(4, request);
+		}else if(jobCode.equals("RegStore")) {
+			registration = new Registration();
+			action = registration.backController(5, request);
+		}else if(jobCode.equals("RegEmployee")) {
+			registration = new Registration();
+			action = registration.backController(6, request);
 		}
 		
 		if(action.isRedirect()) {
@@ -81,7 +92,7 @@ public class FrontController extends HttpServlet {
 			action = registration.backController(3, request);
 		}else if(jobCode.equals("Access")) {
 			auth = new Auth();
-			action = auth.backController(4, request);
+			action = auth.backController(1, request);
 		}else if(jobCode.equals("AccessOut")) { 
 			auth = new Auth();
 			action = auth.backController(5, request);
@@ -91,12 +102,14 @@ public class FrontController extends HttpServlet {
 		}else if(jobCode.equals("MovePage")) {
 			registration = new Registration();
 			action = registration.backController(-1, request);
+		}else if(jobCode.equals("MovePageStore")) {
+			registration = new Registration();
+			action = registration.backController(-2, request);
 		}
 		
 		if(action.isRedirect()) {
 			response.sendRedirect(action.getPage());
 		}else {
-			System.out.println("test");
 			RequestDispatcher dispatcher = request.getRequestDispatcher(action.getPage());
 			dispatcher.forward(request, response);
 		}

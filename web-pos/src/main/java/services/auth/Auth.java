@@ -29,6 +29,8 @@ public class Auth {
 			break;
 		case 3:
 			break;
+		case 4:
+			break;
 		}
 		
 		return action;
@@ -36,6 +38,8 @@ public class Auth {
 	}
 	
 	private ActionBean accessCtl() {
+		
+		System.out.println("로그인 성공?");
 		
 		return action;
 	}

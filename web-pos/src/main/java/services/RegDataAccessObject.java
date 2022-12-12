@@ -5,6 +5,7 @@ import java.sql.PseudoColumnUsage;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import beans.CategoriesBean;
 import beans.GroupBean;
 import beans.StoreBean;
 
@@ -13,6 +14,49 @@ public class RegDataAccessObject extends DataAccessObject{
 	public RegDataAccessObject() {
 		// TODO Auto-generated constructor stub
 	}
+	
+	/* [INS] STORESCATEGORIES */
+	public int insStoreLevel(Connection connection, GroupBean group) {
+		int result = 0;
+		String dml = "INSERT INTO SC(SC_STCODE, SC_CODE, SC_NAME) "
+				   + "VALUES(?, ?, ?)";
+		try {
+			this.ps = connection.prepareStatement(dml);
+			this.ps.setNString(1, group.getStoreInfoList().get(0).getStoreCode());
+			for(CategoriesBean category : group.getStoreInfoList().get(0).getLevInfo()) {
+				this.ps.setNString(2, category.getLevCode());
+				this.ps.setNString(3, category.getLevName());
+				result = this.ps.executeUpdate();
+				if(result == 0) break;
+			}
+		}catch(SQLException e) {e.printStackTrace();}
+		return result;
+	}
+	
+	// insert Store
+		public int insStore(Connection connection, GroupBean group) {
+			int result = 0;
+			String dml = "INSERT INTO ST(ST_CODE, ST_NAME, ST_ZIPCODE, ST_ADDR, ST_ADDRDETAIL, ST_PHONE, ST_SGCODE) "
+					+ "VALUES(?, ?, ?, ?, ?, ?, ?)";
+			
+			try {
+				this.ps = connection.prepareStatement(dml);
+				ps.setNString(1, group.getStoreInfoList().get(0).getStoreCode());
+				ps.setNString(2, group.getStoreInfoList().get(0).getStoreName());
+				ps.setNString(3, group.getStoreInfoList().get(0).getStoreZip());
+				ps.setNString(4, group.getStoreInfoList().get(0).getStoreAddr());
+				ps.setNString(5, group.getStoreInfoList().get(0).getStoreAddrDetail());
+				ps.setNString(6, group.getStoreInfoList().get(0).getStorePhone());
+				ps.setNString(7, group.getGroupCode());
+				
+				result = this.ps.executeUpdate();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			
+			System.out.println(result);
+			return result;
+		}
 	
 	// insert StoreGroup
 	public int insStoreGroup(Connection connection, GroupBean group) {
@@ -93,6 +137,7 @@ public class RegDataAccessObject extends DataAccessObject{
 		
 		return groupList;
 	}
+	
 	/* insert구문 순서
 	 * 
 	 * 1. dml작성
@@ -113,6 +158,23 @@ public class RegDataAccessObject extends DataAccessObject{
 		try {
 			this.ps = connection.prepareStatement(dml);
 			ps.setNString(1, group.getGroupName());
+			
+			result = this.ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+	
+	public int deleteStore(Connection connection, StoreBean store) {
+		int result = 0;
+		
+		String dml = "DELETE FROM ST WHERE ST_CODE = ?";
+		
+		try {
+			this.ps = connection.prepareStatement(dml);
+			ps.setNString(1, store.getStoreCode());
 			
 			result = this.ps.executeUpdate();
 		} catch (SQLException e) {
