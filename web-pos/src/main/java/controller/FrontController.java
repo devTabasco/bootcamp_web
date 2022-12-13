@@ -81,6 +81,7 @@ public class FrontController extends HttpServlet {
 		Registration registration;
 		Auth auth;
 		
+		
 		if(jobCode.equals("MemberJoin")) {
 			registration = new Registration();
 			action = registration.backController(1, request);
@@ -108,8 +109,10 @@ public class FrontController extends HttpServlet {
 		}
 		
 		if(action.isRedirect()) {
+			//response를 보내주는 방식이 Redirect
 			response.sendRedirect(action.getPage());
 		}else {
+			//request를 다시 return 해주는 방식이 forward
 			RequestDispatcher dispatcher = request.getRequestDispatcher(action.getPage());
 			dispatcher.forward(request, response);
 		}

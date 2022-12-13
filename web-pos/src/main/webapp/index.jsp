@@ -19,8 +19,8 @@
 			<h1 class="logo">CodeHunt</h1>
 			<div class="container" id="joinDataLayer">
 				<input type="text" placeholder="stcode" id="id" name="storeCode" class="account">
-				<input type="text" placeholder="secode" name="employeeCode" id="id" class="account">
-				<input type="password" placeholder="pin" name="pin" id="password"
+				<input type="text" placeholder="secode" name="empCode" id="id" class="account">
+				<input type="password" placeholder="pin" name="empPin" id="password"
 					class="account">
 				<div class="selectLine">
 					<button id="login" class="account" onClick="registration()">로그인</button>
@@ -39,8 +39,8 @@
 		let submitResult = false;
 
 		group.push(document.getElementsByName("storeCode")[0]);
-		group.push(document.getElementsByName("employeeCode")[0]);
-		group.push(document.getElementsByName("pin")[0]);
+		group.push(document.getElementsByName("empCode")[0]);
+		group.push(document.getElementsByName("empPin")[0]);
 
 		for (let idx = 0; idx < group.length; idx++) {
 			submitResult = accessLengthCheck(group[idx]);

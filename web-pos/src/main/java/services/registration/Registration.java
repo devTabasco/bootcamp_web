@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.sql.Connection;
 import java.util.ArrayList;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jasper.compiler.NewlineReductionServletWriter;
@@ -14,7 +15,6 @@ import beans.ActionBean;
 import beans.CategoriesBean;
 import beans.GroupBean;
 import beans.StoreBean;
-import services.RegDataAccessObject;
 
 /*
  * - 대표자 등록
@@ -90,10 +90,10 @@ public class Registration {
 
 		// transaction control
 		dao.modifyTranStatus(connection, false);
-		dao.setTransaction(true, connection);
 
-		
 		tran = this.convertToBoolean(dao.deleteStore(connection, storeBean));
+		
+		dao.setTransaction(true, connection);
 		
 		dao.modifyTranStatus(connection, true);
 		// dao close;
@@ -225,10 +225,6 @@ public class Registration {
 		groupBean.setGroupName(this.request.getParameter("groupName"));
 		groupBean.setGroupCeo(this.request.getParameter("groupCeo"));
 		groupBean.setGroupPin(this.request.getParameter("groupPin"));
-
-//		System.out.println(groupBean.getGroupName());
-//		System.out.println(groupBean.getGroupCeo());
-//		System.out.println(groupBean.getGroupPin());
 
 		// 2. dao allocation
 		boolean tran = false;

@@ -19,7 +19,7 @@
 
 function accessLengthCheck(obj) {
 	//서버로 전송할 데이터 길이의 유효성 판단
-	const data = [["storeCode",10] , ["employeeCode",3] , ["pin",6]];
+	const data = [["storeCode",10] , ["empCode",3] , ["empPin",6]];
 	let result = false;
 	for(let i=0;i<data.length;i++){
 		if(obj.getAttribute("name") == data[i][0]){

@@ -10,7 +10,14 @@ public class StoreBean {
 	private String storeAddrDetail;
 	private String storePhone;
 	private ArrayList<CategoriesBean> levInfo;
+	private ArrayList<EmployeeBean> empList;
 	
+	public ArrayList<EmployeeBean> getEmpList() {
+		return empList;
+	}
+	public void setEmpList(ArrayList<EmployeeBean> empList) {
+		this.empList = empList;
+	}
 	public ArrayList<CategoriesBean> getLevInfo() {
 		return levInfo;
 	}

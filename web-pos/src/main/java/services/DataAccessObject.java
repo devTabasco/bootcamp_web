@@ -15,7 +15,7 @@ public class DataAccessObject {
 	}
 	
 	/* CONNECTION CREATION */
-	public Connection openConnection() {
+	public Connection openConnect() {
 		Connection connection = null;
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver"); //get jdbc Driver
@@ -32,7 +32,7 @@ public class DataAccessObject {
 	}
 
 	/* CONNECTION Close */
-	public void closeConnection(Connection connection) {
+	public void closeConnect(Connection connection) {
 		try {
 			if(connection != null && !connection.isClosed()) {
 				if(this.rs != null && !this.rs.isClosed()) this.rs.close();
@@ -46,7 +46,7 @@ public class DataAccessObject {
 	}
 
 	/* Transaction Mgr */
-	public void modifyTranStatus(Connection connection, boolean status) {
+	public void setTranStatus(Connection connection, boolean status) {
 		try {
 			if(connection != null && !connection.isClosed()) {
 				connection.setAutoCommit(status);
@@ -56,7 +56,7 @@ public class DataAccessObject {
 		}
 	}
 	
-	public boolean setTransaction(boolean tran, Connection connection) {
+	public boolean setTransactionEnd(boolean tran, Connection connection) {
 		boolean result = false;
 		try {
 			if(tran) {
