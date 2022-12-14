@@ -2,29 +2,16 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Web-Pos Main</title>
-<link rel="stylesheet" href="resources/css/main.css">
+<title></title>
+<script src="resources/js/common.js"></script>
 </head>
-<body>
-	<div class="nav">
-		<h1>CodeHunt</h1>
-		<p>정현우 :: 임창용 :: 박건호 :: 정영준</p>
-	</div>
-	<div class="main">
-		<div class="contents">
-			<h1 class="logo">CodeHunt</h1>
-			<div class="container">
-				<input type="text" placeholder="GroupName" id="id" class="account">
-				<input type="text" placeholder="StoreId" id="id" class="account">
-				<input type="password" placeholder="Password" id="password" class="account">
-				<div>
-					<a href="tmp.html"><button id="login" class="account">로그인</button></a>
-					<a href="group-step1.jsp"><button id="login" class="account">회원가입</button></a>
-				</div>
-				<p id="alert" class="account"> </p>
-			</div>
-		</div>
-	</div>   
-	<div class="footer"></div>
+<body onload="randing()">
+<script>
+	function randing() {
+		const form = createForm("", "Randing", "post");
+		document.body.appendChild(form);
+		form.submit();
+	}
+</script>
 </body>
 </html>

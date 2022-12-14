@@ -1,6 +1,15 @@
 /**
  * 
  */
+ 
+ /* PUBLIC IP 수집 */
+ let publicIp;
+ function getPublicIp(){
+	//106.243.194.229
+	/* https://api.ipify.org?format=json */ //AJAX의 GET 활용
+	return "106.243.194.229";
+}
+ 
  //<input type="text" name="groupName" placeholder="GROUP NAME" />
  function lengthCheck(obj) {
 	//서버로 전송할 데이터 길이의 유효성 판단
@@ -34,6 +43,7 @@ function accessLengthCheck(obj) {
 }
 
 function createForm(name, action, method){
+	publicIp = getPublicIp();
 	const form = document.createElement("form");
 	if(name != "") form.setAttribute("name", name);
 	form.setAttribute("action", action);

@@ -40,14 +40,17 @@ public class AuthDataAccessObject extends DataAccessObject {
 	/* 상점코드, 직원코드, 접속일시, 접속주소, 접속목적(1,-1) */
 	final int insAccessLogin(Connection connection, StoreBean store) {
 		int result = 0;
-		String dml = "INSERT INTO ACCESSLOG(AC_SESTCODE, AC_SECODE, AC_DATE, AC_IP, AC_TYPE) "
-				+ "VALUES(?, ?, DEFAULT, ?, ?)";
+		String dml = "INSERT INTO ACCESSLOG(AC_SESTCODE, AC_SECODE, AC_DATE, AC_IP, AC_TYPE, AC_BROWSER, AC_PUBLICIP, AC_STATE) "
+				+ "VALUES(?, ?, DEFAULT, ?, ?, ?, ?, ?)";
 		try {
 			this.ps = connection.prepareStatement(dml);
 			this.ps.setNString(1, store.getStoreCode());
 			this.ps.setNString(2, store.getEmpList().get(0).getEmpCode());
 			this.ps.setNString(3, store.getEmpList().get(0).getAccessList().get(0).getAccessLocate());
 			this.ps.setNString(4, store.getEmpList().get(0).getAccessList().get(0).getAccessType());
+			this.ps.setNString(5, store.getEmpList().get(0).getAccessList().get(0).getAccessBrowser());
+			this.ps.setNString(6, store.getEmpList().get(0).getAccessList().get(0).getAccessPublicIp());
+			this.ps.setNString(7, store.getEmpList().get(0).getAccessList().get(0).getAccessState());
 			
 			result = this.ps.executeUpdate();
 		}catch(SQLException e) {e.printStackTrace();}

@@ -19,8 +19,9 @@ import services.registration.Registration;
 /**
  * Servlet implementation class FrontController
  */
-@WebServlet({"/MovePageStore","/MovePage", "/Join", "/GroupDupCheck","/MemberJoin", "/RegStore", "/RegEmp", "/Access", "/AccessOut"})
+@WebServlet({"/Randing","/MovePageStore","/MovePage", "/Join", "/GroupDupCheck","/MemberJoin", "/RegStore", "/RegEmp", "/Access", "/AccessOut"})
 public class FrontController extends HttpServlet {
+	//session ID를 생성해주는 객체
 	private static final long serialVersionUID = 1L;
        
     /**
@@ -97,6 +98,9 @@ public class FrontController extends HttpServlet {
 		}else if(jobCode.equals("AccessOut")) { 
 			auth = new Auth();
 			action = auth.backController(5, request);
+		}else if(jobCode.equals("Randing")) { 
+			auth = new Auth();
+			action = auth.backController(0, request);
 		}else if(jobCode.equals("GroupDupCheck")) {
 			registration = new Registration();
 			action = registration.backController(0, request); 

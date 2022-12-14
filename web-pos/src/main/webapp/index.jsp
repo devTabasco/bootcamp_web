@@ -31,7 +31,7 @@
 	</div>
 	<div class="footer"></div>
 </body>
-<script type="text/javascript">
+<script type="text/javascript">  
 	function registration() {
 		const form = createForm("", "Access", "post");
 		const joinDataLayer = document.getElementById("joinDataLayer");
@@ -49,7 +49,9 @@
 			else
 				break;
 		}
-
+		
+		const hidden = createInputBox("hidden","accessPublicIp",publicIp,"");
+		form.appendChild(hidden);
 		if (submitResult) {
 			joinDataLayer.appendChild(form);
 			form.submit();
