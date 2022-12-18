@@ -104,4 +104,29 @@ h2 {
 #resume-body{
 	padding: 5% 7%;
 	text-align: center;
+	background-color: #FEFCF3;
 }
+
+.resume-left {
+	text-align: center;
+	padding: 5% 7%;
+	background-color: #FEFCF3;
+}
+
+.resume-right { text-align: center; background-color: #FEFCF3; }
+
+p {display: inline-block;}
+
+.contents-area { 
+	text-align: left; 
+	margin-bottom: 5%;
+	padding: 3%;
+}
+
+.input-data{width: 100%; box-sizing: border-box;}
+
+.col { padding: 0px; }
+
+.fixed-right{ position:fixed; }
+
+h4{ margin-bottom: 3% }

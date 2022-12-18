@@ -1,4 +1,4 @@
-package services.auth;
+package services.regist;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -8,19 +8,17 @@ import javax.servlet.http.HttpServletRequest;
 
 import beans.ActionBean;
 import beans.MemberBean;
-import services.regist.RegistDataAccessObject;
 
-
-public class Auth {
-	private HttpServletRequest request;
+public class Regist {
+	HttpServletRequest request;
 
 	public ActionBean backController(int serviceCode, HttpServletRequest request) {
-		ActionBean action = null;
+		ActionBean action = new ActionBean();
 		this.request = request;
-		
+
 		switch (serviceCode) {
 		case 1:
-			action = this.accessCtl();
+			action = this.registCtl();
 			break;
 		case 2:
 			break;
@@ -28,34 +26,45 @@ public class Auth {
 		default:
 			break;
 		}
-		
+
 		return action;
+
 	}
-	
-	private ActionBean accessCtl() {
+
+	private ActionBean registCtl() {
+		/*
+		 * job : 회원가입 1. DB에서 ID와 PHONE이 Unique한지 확인 2. 없다면 insert
+		 * 
+		 */
 		System.out.println(this.request.getParameter("memberId"));
+		System.out.println(this.request.getParameter("memberPhone"));
+		System.out.println(this.request.getParameter("memberEmail"));
 		System.out.println(this.request.getParameter("memberPassword"));
-		
+
 		ActionBean action = new ActionBean();
-		String page = "login.jsp", message = null;
+		String page = "index.jsp", message = null;
 		boolean redirect = true;
-		AuthDataAccessObject dao = new AuthDataAccessObject();
-		
+		RegistDataAccessObject dao = new RegistDataAccessObject();
+
+		/* 1. req --> GroupBean */
 		MemberBean memberBean = new MemberBean();
-		//memberId에 Phone과 email을 모두 담아 bean의 Email로 dao에 전달
-		memberBean.setMemberEmail(this.request.getParameter("memberId"));
+		memberBean.setMemberId(this.request.getParameter("memberId"));
+		memberBean.setMemberPhone(this.request.getParameter("memberPhone"));
+		memberBean.setMemberEmail(this.request.getParameter("memberEmail"));
 		memberBean.setMemberPassword(this.request.getParameter("memberPassword"));
-		
+
 		/* 2. DAO Allocation & DAO Open */
 		Connection connection = dao.openConnection();
 		/* 2-1. Transaction Start */
 		dao.setAutoCommitController(connection, false);
 		/* 2-2. [INS] STOREGROUP */
 
-		// 1. DB에서 ID와 PHONE이 존재하는지 확인
-		if (!this.convertToBoolean(dao.selectAccountInfo(connection, memberBean))) {
-			page = "makeResume.jsp";
-		} else message = "회원정보가 잘못되었습니다.";
+		// 1. DB에서 ID와 PHONE이 Unique한지 확인
+		if (!this.convertToBoolean(dao.selectId(connection, memberBean))) {
+			// 2. 없다면 insert
+			if (!convertToBoolean(dao.insertMember(connection, memberBean))) message = "회원가입에 실패하였습니다.";
+		} else
+			message = "이미 존재하는 회원 정보입니다.";
 
 		/* 2-4. Transaction End */
 		dao.setTransaction(true, connection);
@@ -75,8 +84,9 @@ public class Auth {
 		action.setRedirect(redirect);
 
 		return action;
+
 	}
-	
+
 	/* Convert to Boolean */
 	private boolean convertToBoolean(int value) {
 		return value > 0 ? true : false;

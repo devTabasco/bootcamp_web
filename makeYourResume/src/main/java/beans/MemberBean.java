@@ -4,8 +4,15 @@ public class MemberBean {
 	
 	private String memberId;
 	private String memberEmail;
+	private String memberPhone;
 	private String memberPassword;
 	
+	public String getMemberPhone() {
+		return memberPhone;
+	}
+	public void setMemberPhone(String memberPhone) {
+		this.memberPhone = memberPhone;
+	}
 	public String getMemberId() {
 		return memberId;
 	}

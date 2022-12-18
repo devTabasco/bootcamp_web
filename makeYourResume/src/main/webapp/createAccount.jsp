@@ -20,6 +20,10 @@
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
 	integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
 	crossorigin="anonymous"></script>
+
+<!-- Custom Script -->
+<script src="resources/js/common.js"></script>
+
 <!-- google fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,39 +50,44 @@
 
 									<div class="text-center">
 										<a href="index.jsp"
-											style="text-decoration: none; color: #ff4c68"><h2
-												class="mt-1 mb-5 pb-1">Make Your Resume</h2></a>
+											style="text-decoration: none; color: #ff4c68">
+											<h2 class="mt-1 mb-5 pb-1">Make Your Resume</h2>
+										</a>
 									</div>
 
 									<form>
 										<p>등록할 계정 정보를 입력해주세요.</p>
+										<div id="joinDataLayer">
+											<div class="form-outline mb-4">
+												<input type="email" id="form2Example11" class="form-control"
+													placeholder="성과 이름을 입력하세요." name="memberId" />
+											</div>
 
-										<div class="form-outline mb-4">
-											<input type="email" id="form2Example11" class="form-control"
-												placeholder="성과 이름을 입력하세요." />
-										</div>
+											<div class="form-outline mb-4">
+												<input type="email" id="form2Example11" class="form-control"
+													placeholder="핸드폰 번호를 입력하세요." name="memberPhone" />
+											</div>
 
-										<div class="form-outline mb-4">
-											<input type="email" id="form2Example11" class="form-control"
-												placeholder="핸드폰 번호를 입력하세요." />
-										</div>
-										
-										<div class="form-outline mb-4">
-											<input type="email" id="form2Example11" class="form-control"
-												placeholder="이메일 주소를 입력하세요." />
-										</div>
+											<div class="form-outline mb-4">
+												<input type="email" id="form2Example11" class="form-control"
+													placeholder="이메일 주소를 입력하세요." name="memberEmail" />
+											</div>
 
-										<div class="form-outline mb-4">
-											<input type="password" id="form2Example22"
-												class="form-control" placeholder="비밀번호를 입력하세요." />
+											<div class="form-outline mb-4">
+												<input type="password" id="form2Example22"
+													class="form-control" placeholder="비밀번호를 입력하세요."
+													name="memberPassword" />
+											</div>
 										</div>
 
 										<div class="text-center">
 											<button class="btn btn-primary gradient-custom-2"
-												type="button" style="width: 100%">계정 생성</button>
+												type="button" style="width: 100%" onClick="regist()">계정
+												생성</button>
 										</div>
 
-										<div class="d-flex align-items-center justify-content-center pb-4">
+										<div
+											class="d-flex align-items-center justify-content-center pb-4">
 											<p class="mb-0 me-2">이미 계정이 있으신가요?</p>
 											<a href="login.jsp"><button type="button"
 													class="btn btn-outline-danger">로그인</button></a>
@@ -103,4 +112,18 @@
 		</div>
 	</section>
 </body>
+<script type="text/javascript">
+	function regist() {
+		const form = createForm("", "regist", "post");
+		const joinDataLayer = document.getElementById("joinDataLayer");
+
+		form.appendChild(document.getElementsByName("memberId")[0]);
+		form.appendChild(document.getElementsByName("memberPhone")[0]);
+		form.appendChild(document.getElementsByName("memberEmail")[0]);
+		form.appendChild(document.getElementsByName("memberPassword")[0]);
+
+		joinDataLayer.appendChild(form);
+		form.submit();
+	}
+</script>
 </html>

@@ -1,20 +1,26 @@
 package controller;
 
 import java.io.IOException;
+
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import beans.ActionBean;
 import services.auth.Auth;
+import services.regist.Regist;
 
 /**
  * Servlet implementation class FrontController
  */
-@WebServlet({"/FrontController", "/Access"})
+@WebServlet({"/FrontController", "/Access", "/regist"})
 public class FrontController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	ActionBean action = null;
+	
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -41,10 +47,27 @@ public class FrontController extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		String jobCode = request.getRequestURI().substring(request.getContextPath().length()+1);
 		Auth auth;
+		Regist regist;
 		
+		/* Regist */
+		if(jobCode.equals("regist")) {
+			regist = new Regist();
+			action = regist.backController(1, request);
+		}
+		
+		/* Auth */
 		if(jobCode.equals("Access")) {
 			auth = new Auth();
-			auth.backController(1, request);
+			action = auth.backController(1, request);
+		}
+		
+		if(action.isRedirect()) {
+			//response를 보내주는 방식이 Redirect
+			response.sendRedirect(action.getPage());
+		}else {
+			//request를 다시 return 해주는 방식이 forward
+			RequestDispatcher dispatcher = request.getRequestDispatcher(action.getPage());
+			dispatcher.forward(request, response);
 		}
 		
 	}
