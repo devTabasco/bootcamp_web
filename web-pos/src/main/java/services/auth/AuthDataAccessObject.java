@@ -47,7 +47,7 @@ public class AuthDataAccessObject extends DataAccessObject {
 			this.ps.setNString(1, store.getStoreCode());
 			this.ps.setNString(2, store.getEmpList().get(0).getEmpCode());
 			this.ps.setNString(3, store.getEmpList().get(0).getAccessList().get(0).getAccessLocate());
-			this.ps.setNString(4, store.getEmpList().get(0).getAccessList().get(0).getAccessType());
+			this.ps.setInt(4, store.getEmpList().get(0).getAccessList().get(0).getAccessType());
 			this.ps.setNString(5, store.getEmpList().get(0).getAccessList().get(0).getAccessBrowser());
 			this.ps.setNString(6, store.getEmpList().get(0).getAccessList().get(0).getAccessPublicIp());
 			this.ps.setNString(7, store.getEmpList().get(0).getAccessList().get(0).getAccessState());
@@ -78,7 +78,11 @@ public class AuthDataAccessObject extends DataAccessObject {
 			this.rs = this.ps.executeQuery();
 			while(this.rs.next()) {
 				accessLogBean.setAccessDateTime(this.rs.getNString("ACCESSDATE"));
-				accessLogBean.setAccessLocate(this.rs.getNString("ACCESSLOCATION"));
+				accessLogBean.setAccessBrowser(this.rs.getNString("BROWSER"));
+				accessLogBean.setAccessPublicIp(this.rs.getNString("PUBLICIP"));
+				accessLogBean.setAccessLocate(this.rs.getNString("PRIVATEIP"));
+				accessLogBean.setAccessBrowser(this.rs.getNString("BROWSER"));
+				accessLogBean.setAccessState(this.rs.getNString("ISFORCE"));
 				accessList.add(accessLogBean);
 				
 				empBaen.setAccessList(accessList);
@@ -194,5 +198,106 @@ public class AuthDataAccessObject extends DataAccessObject {
 		}catch(SQLException e) {e.printStackTrace();}
 		
 	}
+	
+//	int isAccess(Connection connect, StoreBean store) {
+//		int result = 0;
+//		String query = ""
+//				+ "SELECT ISACCESS "
+//				+ "FROM ISACCESS "
+//				+ "WHERE STORECODE = ? AND EMPCODE = ? ";
+//		try {
+//			this.ps = connect.prepareStatement(query);
+//			this.ps.setNString(1, store.getStoreCode());
+//			this.ps.setNString(2, store.getEmpList().get(0).getEmpCode());
+//			
+//			this.rs = this.ps.executeQuery();
+//			while(this.rs.next()) {
+//				result = this.rs.getInt("ISACCESS");
+//			}
+//		}catch(SQLException e) { e.printStackTrace();}
+//		
+//		return result;
+//	}
+	
+	int isAccess(Connection connect, StoreBean store, boolean isSession) {
+		int result = 0;
+		String query = ""
+				+ "SELECT ISACCESS AS ISACCESS "
+				+ "FROM ISACCESS "
+				+ "WHERE STORECODE = ? AND EMPCODE = ? AND BROWSER "+ (isSession?"=":"!=") + " ?";
+		try {
+			this.ps = connect.prepareStatement(query);
+			this.ps.setNString(1, store.getStoreCode());
+			this.ps.setNString(2, store.getEmpList().get(0).getEmpCode());
+			this.ps.setNString(3, store.getEmpList().get(0).getAccessList().get(0).getAccessBrowser());
+			
+			this.rs = this.ps.executeQuery();
+			while(this.rs.next()) {
+				result = this.rs.getInt("ISACCESS");
+			}
+		}catch(SQLException e) { e.printStackTrace();}
+		
+		return result;
+	}
+	
+	final StoreBean getBeforeAccess(Connection connect, StoreBean store) {
+		/* 로그인 전 이미 로그인 된 기록이 있을 경우 저장할 Object 선언 */
+		StoreBean beforeAccess = null;
+		ArrayList<EmployeeBean> empList = null;
+		EmployeeBean emp = null;
+		ArrayList<AccessLogBean> accessList = null;
+		AccessLogBean access = null;
+		
+		String query = ""
+				+ "SELECT STORECODE, EMPCODE, "
+				+ "		  PUBLICIP, PRIVATEIP, BROWSER "
+				+ "FROM WEBDBA.ISACCESS "
+				+ "WHERE (BROWSER != ? "
+				+ "    OR PUBLICIP != ? "
+				+ "    OR PRIVATEIP != ?) "
+				+ "  AND STORECODE = ? "
+				+ "  AND EMPCODE = ? "
+				+ "  AND ISACCESS = 1";
+		
+		try {
+			this.ps = connect.prepareStatement(query);
+			this.ps.setNString(4, store.getStoreCode());
+			this.ps.setNString(5, store.getEmpList().get(0).getEmpCode());
+			this.ps.setNString(1, store.getEmpList().get(0).getAccessList().get(0).getAccessBrowser());
+			this.ps.setNString(2, store.getEmpList().get(0).getAccessList().get(0).getAccessPublicIp());
+			this.ps.setNString(3, store.getEmpList().get(0).getAccessList().get(0).getAccessLocate());
+						
+			this.rs = this.ps.executeQuery();
+			
+			if(this.rs.isBeforeFirst()) {
+				System.out.println("before");
+				/* 로그인 전 이미 로그인 된 기록을 저장할 Object 할당 */
+				beforeAccess = new StoreBean();
+				empList = new ArrayList<EmployeeBean>();
+				emp = new EmployeeBean();
+				accessList = new ArrayList<AccessLogBean>();
+				access = new AccessLogBean();
+				
+				while(this.rs.next()) {
+					System.out.println("record");
+					/* publicIp, private Ip, browser 정보 저장 */
+					access.setAccessPublicIp(this.rs.getNString("PUBLICIP"));
+					access.setAccessLocate(this.rs.getNString("PRIVATEIP"));
+					access.setAccessBrowser(this.rs.getNString("BROWSER"));
+					accessList.add(access);
+					emp.setAccessList(accessList);
+					/* empCode 정보 저장 */
+					emp.setEmpCode(this.rs.getNString("EMPCODE"));
+					empList.add(emp);
+					beforeAccess.setEmpList(empList);
+					/* storeCode 정보 저장 */
+					beforeAccess.setStoreCode(this.rs.getNString("STORECODE"));
+				}
+			}
+			
+		}catch(SQLException e) { e.printStackTrace();}
+		
+		return beforeAccess;
+	} 
 
 }

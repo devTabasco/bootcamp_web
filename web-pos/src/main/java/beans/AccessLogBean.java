@@ -3,7 +3,7 @@ package beans;
 public class AccessLogBean {
 	private String accessDateTime;
 	private String accessLocate;
-	private String accessType;
+	private int accessType;
 	private String accessPublicIp;
 	private String accessState;
 	
@@ -40,10 +40,10 @@ public class AccessLogBean {
 	public void setAccessLocate(String accessLocate) {
 		this.accessLocate = accessLocate;
 	}
-	public String getAccessType() {
+	public int getAccessType() {
 		return accessType;
 	}
-	public void setAccessType(String accessType) {
+	public void setAccessType(int accessType) {
 		this.accessType = accessType;
 	}
 }

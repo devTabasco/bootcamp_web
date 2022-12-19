@@ -79,7 +79,6 @@ public class RegDataAccessObject extends DataAccessObject {
 			e.printStackTrace();
 		}
 
-		System.out.println(result);
 		return result;
 	}
 
