@@ -1,0 +1,44 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gugi&display=swap');
+
+#background{position:absolute; top:0;left:0;
+	width:100vw; height:100vh;
+	background-color:rgba(0, 0, 0, 0.7);
+}
+#lightBox{position:absolute; top:40%; left:50%; 
+	width:30vw; height:37.5vh; transform:translate(-50%, -50%);
+	background-color: rgba(0, 16, 84, 1);
+	border:1rem solid rgba(255, 187, 0, 1); border-radius:0.5rem;
+	font-family:'Do Hyeon', sans-serif; font-size: 1.5vw;
+	text-align:center;
+}
+#messageTitle{position:relative;
+	width:100%; height:20%;
+	background-color:rgba(255, 187, 0, 1);
+	font-size: 1.8vw;font-weight:900;line-height:calc(37.5vh*0.2);
+}
+#messageZone{position:relative;
+	width:100%; height:60%;
+}
+#messageContent{position:relative;top:51.5%;left:50%;
+	width:97%; height:90%; transform:translate(-50%, -50%);
+	border-radius:0.5rem;
+	background-color:rgba(255, 255, 255, 1);
+}
+
+#messageAction{position:relative;
+	width:100%; height:20%;
+	border-radius:0 0 0.5rem 0.5rem;
+	background-color:rgba(0, 16, 84, 1);
+}
+.button	{position:relative;top:50%;left:50%;
+	width:97%; height:80%; transform:translate(-50%, -50%);
+	border-radius:0.5rem; line-height:calc(37.5vh*0.16);
+	background-color: rgba(140, 140, 140, 1);
+	color:rgba(255, 255, 255, 1); 
+}
+.button:hover{
+	background-color:rgba(255, 187, 0, 1);
+	cursor:pointer;
+}
+
