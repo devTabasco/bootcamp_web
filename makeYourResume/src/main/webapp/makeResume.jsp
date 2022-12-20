@@ -327,6 +327,9 @@
 		function toggleDiv(i) {
 			const div = document.getElementById('target-' + i);
 			const btn = document.getElementById('btn-' + i);
+			
+			//var parent = div.parentNode;
+			//parent.after(div, parent.childNodes[2]);
 
 			if (div.style.display === 'none') {
 				div.style.display = 'block';
@@ -334,6 +337,7 @@
 				div.style.display = 'none';
 			}
 		}
+		
 	</script>
 </body>
 </html>

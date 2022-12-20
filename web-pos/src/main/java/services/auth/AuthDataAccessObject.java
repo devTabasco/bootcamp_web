@@ -251,7 +251,7 @@ public class AuthDataAccessObject extends DataAccessObject {
 		String query = ""
 				+ "SELECT STORECODE, EMPCODE, "
 				+ "		  PUBLICIP, PRIVATEIP, BROWSER "
-				+ "FROM WEBDBA.ISACCESS "
+				+ "FROM ISACCESS "
 				+ "WHERE (BROWSER != ? "
 				+ "    OR PUBLICIP != ? "
 				+ "    OR PRIVATEIP != ?) "

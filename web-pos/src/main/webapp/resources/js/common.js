@@ -9,7 +9,16 @@
 	/* https://api.ipify.org?format=json */ //AJAX의 GET 활용
 	return "106.243.194.229";
 }
- 
+
+function createDIV(objId, className, funcName){
+	const div = document.createElement("div");
+	if(objId != "") div.setAttribute("id",objId);
+	div.setAttribute("class",className);
+	if(funcName != "") div.setAttribute("onClick",funcName);
+	
+	return div;
+}
+
  //<input type="text" name="groupName" placeholder="GROUP NAME" />
  function lengthCheck(obj) {
 	//서버로 전송할 데이터 길이의 유효성 판단

@@ -10,7 +10,7 @@ public class RegistDataAccessObject extends DataAccessObject {
 
 	public int selectId(Connection connection, MemberBean memberBean) {
 		int result = 0;
-		String query = "SELECT count(*) AS ISMEMBER FROM MEMBERS WHERE ME_EMAIL = ? or ME_PHONE = ?";
+		String query = "SELECT count(*) AS ISMEMBER FROM MEMBERS WHERE (ME_EMAIL = ? or ME_PHONE = ?) and ME_PASSWORD";
 
 		try {
 			this.ps = connection.prepareStatement(query);

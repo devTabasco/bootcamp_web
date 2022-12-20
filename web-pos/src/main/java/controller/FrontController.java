@@ -14,12 +14,13 @@ import javax.swing.text.StyledEditorKit.BoldAction;
 
 import beans.ActionBean;
 import services.auth.Auth;
+import services.goods.GoodsManagement;
 import services.registration.Registration;
 
 /**
  * Servlet implementation class FrontController
  */
-@WebServlet({"/Landing","/MovePageStore","/MovePage", "/Join", "/GroupDupCheck","/MemberJoin", "/RegStore", "/RegEmp", "/Access", "/AccessOut"})
+@WebServlet({"/GetGoodsCategory","/Landing","/MovePageStore","/MovePage", "/Join", "/GroupDupCheck","/MemberJoin", "/RegStore", "/RegEmp", "/Access", "/AccessOut"})
 public class FrontController extends HttpServlet {
 	//session ID를 생성해주는 객체
 	private static final long serialVersionUID = 1L;
@@ -40,6 +41,7 @@ public class FrontController extends HttpServlet {
 		String jobCode = request.getRequestURI().substring(request.getContextPath().length()+1);
 		Registration registration;
 		Auth auth;
+		GoodsManagement goodsManagement;
 		
 		System.out.println(jobCode);
 		
@@ -71,6 +73,9 @@ public class FrontController extends HttpServlet {
 		}else if(jobCode.equals("MovePageStore")) {
 			registration = new Registration();
 			action = registration.backController(-2, request);
+		}else if(jobCode.equals("GetGoodsCategory")) {
+			goodsManagement = new GoodsManagement();
+			action = goodsManagement.backController(1, request);
 		}
 		
 		if(action.isRedirect()) {

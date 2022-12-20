@@ -12,11 +12,13 @@ import beans.ActionBean;
 import beans.EmployeeBean;
 import beans.GroupBean;
 import beans.StoreBean;
-import controller.ClientInfo;
+import services.DataAccessObject;
 import services.registration.RegDataAccessObject;
 
 public class Auth {
 	private HttpServletRequest request;
+	HttpSession session;
+	AuthDataAccessObject dao;
 
 	public Auth() {
 
@@ -25,19 +27,23 @@ public class Auth {
 	public ActionBean backController(int serviceCode, HttpServletRequest request) {
 		this.request = request;
 		ActionBean action = null;
+		session = this.request.getSession();
 
 		switch (serviceCode) {
 		case -1:
-			System.out.println(serviceCode);
+			dao = new AuthDataAccessObject();
 			action = this.accessOut();
 			break;
 		case 1:
+			dao = new AuthDataAccessObject();
 			action = this.accessCtl();
 			break;
 		case 2:
+			dao = new AuthDataAccessObject();
 			action = this.accessOut();
 			break;
 		case 0:
+			dao = new AuthDataAccessObject();
 			action = this.initCtl();
 			break;
 		case 4:
@@ -53,8 +59,6 @@ public class Auth {
 		String page = "index.jsp", message = null;
 		boolean redirect = true, tran = false;
 
-		HttpSession session = this.request.getSession();
-
 //		if (session.getAttribute("AccessInfo") != null) {
 //			if (this.isAccess(((GroupBean) session.getAttribute("AccessInfo")).getStoreInfoList().get(0))) {
 //				page = "manager.jsp";
@@ -64,8 +68,6 @@ public class Auth {
 		
 		if(session.getAttribute("AccessInfo") != null) {
 			System.out.println("Landing : 세션이 살아있는 경우");
-			System.out.println(((GroupBean)session.getAttribute("AccessInfo")).getStoreInfoList().get(0).getStoreName());
-			System.out.println(((GroupBean)session.getAttribute("AccessInfo")).getStoreInfoList().get(0).getEmpList().get(0).getAccessList().get(0).getAccessBrowser());
 			if(this.isAccess(
 					((GroupBean)session.getAttribute("AccessInfo")).getStoreInfoList().get(0), true)){
 				page = "manager.jsp";
@@ -92,7 +94,6 @@ public class Auth {
 	
 	private ActionBean accessCtl() {
 		/* Job Controller Pattern */
-		HttpSession session = this.request.getSession();
 		ActionBean action = new ActionBean();
 		String page = "index.jsp", message = null;
 		boolean isForward = false, tran = false;
@@ -104,7 +105,6 @@ public class Auth {
 		EmployeeBean emp = new EmployeeBean();
 		AccessLogBean access = new AccessLogBean();
 		ArrayList<AccessLogBean> accessList = new ArrayList<AccessLogBean>();
-		AuthDataAccessObject dao = new AuthDataAccessObject();
 
 		if(session.getAttribute("AccessInfo") == null) {
 			access.setAccessPublicIp(this.request.getParameter("accessPublicIp"));
@@ -165,6 +165,7 @@ public class Auth {
 								group.getStoreInfoList().get(0).getEmpList().get(0).setEmpPin(null);
 
 								System.out.println(group.getStoreInfoList().get(0).getEmpList().get(0).getAccessList().get(0).getAccessBrowser());
+								System.out.println(group.getStoreInfoList().size());
 								session.setAttribute("AccessInfo", group);
 								page = !group.getStoreInfoList().get(0)
 										.getEmpList().get(0)
@@ -178,6 +179,8 @@ public class Auth {
 			dao.setTransaction(tran, connection);
 			dao.modifyTranStatus(connection, true);
 			dao.closeConnection(connection);
+			dao = null;
+			this.request.setAttribute("options", this.storeList());
 		}else {
 			/* Browser 정보 */
 			String browserInfo = ((GroupBean)session.getAttribute("AccessInfo")).getStoreInfoList().get(0).getEmpList().get(0).getAccessList().get(0).getAccessBrowser();
@@ -186,6 +189,7 @@ public class Auth {
 			if(this.isAccess(
 					((GroupBean)session.getAttribute("AccessInfo"))
 					.getStoreInfoList().get(0), true)) {
+				this.request.setAttribute("options", this.storeList());
 				System.out.println("세션은 있고 자신의 로그인 기록이 있는 경우");
 				System.out.println(browserInfo);
 				page = "manager.jsp";
@@ -196,8 +200,10 @@ public class Auth {
 				session.invalidate();
 			}
 		}
+		
+		
 		action.setPage(page);
-		action.setRedirect(isForward);
+		action.setRedirect(!isForward);
 		return action;
 	}
 
@@ -292,6 +298,17 @@ public class Auth {
 //
 //		return action;
 //	}
+	
+	private String storeList() {
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append("<select name=\"storeCode\" class=\"normal\">");
+		for(StoreBean store : ((GroupBean)this.session.getAttribute("AccessInfo")).getStoreInfoList()) {
+			sb.append("<option value=\""+ store.getStoreCode()+"\">"+store.getStoreName()+"</option>");
+		}
+		sb.append("</select>");
+		return sb.toString();
+	}
 
 	private String getBrowser() {
 		/*
@@ -344,7 +361,6 @@ public class Auth {
 
 	private ActionBean accessOutCtl(StoreBean... store) {
 		HttpSession session = this.request.getSession();
-		AuthDataAccessObject dao = new AuthDataAccessObject();
 		Connection connection = dao.openConnection();
 		ActionBean action = new ActionBean();
 		String page = "index.jsp", message = null;
@@ -365,6 +381,7 @@ public class Auth {
 			dao.setTransaction(tran, connection);
 			dao.modifyTranStatus(connection, true);
 			dao.closeConnection(connection);
+			dao = null;
 			/* 세션종료 */
 			session.invalidate();
 		} else {
@@ -382,7 +399,6 @@ public class Auth {
 		ActionBean action = new ActionBean();
 		String page = "index.jsp", message = null;
 		boolean redirect = true, tran = false;
-		AuthDataAccessObject dao = new AuthDataAccessObject();
 		Connection connection = dao.openConnection();
 		dao.modifyTranStatus(connection, false);
 		GroupBean group = ((GroupBean) session.getAttribute("AccessInfo"));
@@ -406,6 +422,7 @@ public class Auth {
 
 		dao.closeConnection(connection);
 
+		dao = null;
 		action.setPage(page);
 		action.setRedirect(redirect);
 
