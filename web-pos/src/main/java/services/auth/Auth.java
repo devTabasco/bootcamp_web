@@ -1,5 +1,7 @@
 package services.auth;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.util.ArrayList;
 
@@ -19,9 +21,14 @@ public class Auth {
 	private HttpServletRequest request;
 	HttpSession session;
 	AuthDataAccessObject dao;
+	Connection connection;
 
 	public Auth() {
 
+	}
+
+	public Auth(HttpSession session) {
+		this.session = session;
 	}
 
 	public ActionBean backController(int serviceCode, HttpServletRequest request) {
@@ -65,11 +72,10 @@ public class Auth {
 //				redirect = false;
 //			} else session.invalidate();
 //		}
-		
-		if(session.getAttribute("AccessInfo") != null) {
+
+		if (session.getAttribute("AccessInfo") != null) {
 			System.out.println("Landing : 세션이 살아있는 경우");
-			if(this.isAccess(
-					((GroupBean)session.getAttribute("AccessInfo")).getStoreInfoList().get(0), true)){
+			if (this.isAccess(((GroupBean) session.getAttribute("AccessInfo")).getStoreInfoList().get(0), true)) {
 				page = "manager.jsp";
 				redirect = false;
 			}
@@ -82,16 +88,19 @@ public class Auth {
 
 	}
 
-	public Object backController(int serviceCode, Object obj) {
+	public Object backLoadController(int serviceCode, Object obj) {
 		Object result = null;
 		switch (serviceCode) {
 		case 999:
-			result = this.isAccess((StoreBean)obj, true);
+			result = this.isAccess((StoreBean) obj, true);
+			break;
+		case 998:
+			result = this.storeList();
 			break;
 		}
 		return result;
 	}
-	
+
 	private ActionBean accessCtl() {
 		/* Job Controller Pattern */
 		ActionBean action = new ActionBean();
@@ -106,7 +115,7 @@ public class Auth {
 		AccessLogBean access = new AccessLogBean();
 		ArrayList<AccessLogBean> accessList = new ArrayList<AccessLogBean>();
 
-		if(session.getAttribute("AccessInfo") == null) {
+		if (session.getAttribute("AccessInfo") == null) {
 			access.setAccessPublicIp(this.request.getParameter("accessPublicIp"));
 			access.setAccessLocate(this.request.getRemoteAddr());
 			access.setAccessType(1);
@@ -119,26 +128,26 @@ public class Auth {
 			emp.setAccessList(accessList);
 			empList.add(emp);
 
-			store.setStoreCode(this.request.getParameter("storeCode"));		
-			store.setEmpList(empList);		
+			store.setStoreCode(this.request.getParameter("storeCode"));
+			store.setEmpList(empList);
 
 			/* Browser 정보 */
 			String browserInfo = (store.getEmpList().get(0).getAccessList().get(0).getAccessBrowser());
-			System.out.println(browserInfo+" : browserInfo");
+			System.out.println(browserInfo + " : browserInfo");
 			/* 2. DAO */
 			Connection connection = dao.openConnection();
 			dao.modifyTranStatus(connection, false);
 
-			if(this.convertToBoolean(dao.isStoreCode(connection, store))) {
-				if(this.convertToBoolean(dao.isEmpCode(connection, store))) {
-					if(this.convertToBoolean(dao.isEqualPinCode(connection, store))) {
+			if (this.convertToBoolean(dao.isStoreCode(connection, store))) {
+				if (this.convertToBoolean(dao.isEmpCode(connection, store))) {
+					if (this.convertToBoolean(dao.isEqualPinCode(connection, store))) {
 						/* 현재 액세스 여부 */
-						if(!this.isAccess(store, true)) {
+						if (!this.isAccess(store, true)) {
 							System.out.println("세션은 없고 자신의 로그인 기록이 없는 경우");
 							System.out.println(browserInfo);
 
 							/* 다른 로그인 정보 확인 */
-							if(this.isAccess(store, false)) {
+							if (this.isAccess(store, false)) {
 								System.out.println("세션은 없고 자신의 로그인 기록은 없지만 다른 브라우저의 로그인 기록은 있는 경우");
 								System.out.println(browserInfo);
 
@@ -149,29 +158,59 @@ public class Auth {
 								this.accessOutCtl(beforeAccess);
 							}
 
-							if(this.convertToBoolean(dao.insAccessLogin(connection, store))) {
+							if (this.convertToBoolean(dao.insAccessLogin(connection, store))) {
 //								session  = this.request.getSession();
 //								session.setMaxInactiveInterval(30);
 								tran = true;
 								isForward = true;
 								group = dao.getAccessInfo(connection, store);
 
-								if(group.getStoreInfoList().get(0)
-										.getEmpList().get(0)
-										.getEmpLevCode().equals("L1")) {
+								if (group.getStoreInfoList().get(0).getEmpList().get(0).getEmpLevCode().equals("L1")) {
 									dao.getStoreInfo(connection, group);
 								}
 								/* pin 삭제 */
 								group.getStoreInfoList().get(0).getEmpList().get(0).setEmpPin(null);
 
-								System.out.println(group.getStoreInfoList().get(0).getEmpList().get(0).getAccessList().get(0).getAccessBrowser());
+								System.out.println(group.getStoreInfoList().get(0).getEmpList().get(0).getAccessList()
+										.get(0).getAccessBrowser());
 								System.out.println(group.getStoreInfoList().size());
 								session.setAttribute("AccessInfo", group);
-								page = !group.getStoreInfoList().get(0)
-										.getEmpList().get(0)
-										.getEmpLevCode().equals("L3")? "manager.jsp":"pos.jsp";
+								page = !group.getStoreInfoList().get(0).getEmpList().get(0).getEmpLevCode().equals("L3")
+										? "manager.jsp"
+										: "pos.jsp";
+							}
+						} else {
+							// 같은 브라우저에서 로그아웃이 안되어 있는 경우
+							System.out.println("세션에 AccessInfo는 없지만 데이터베이스에 자신의 로그인 기록이 있는 경우");
+							System.out.println(browserInfo);
+							store.getEmpList().get(0).getAccessList().get(0).setAccessType(-1);
+							store.getEmpList().get(0).getAccessList().get(0).setAccessState("S");
+							this.accessOutCtl(store);
+							store.getEmpList().get(0).getAccessList().get(0).setAccessType(1);
+							store.getEmpList().get(0).getAccessList().get(0).setAccessState("R");
+
+						}
+
+						/* 데이터베이스 로그인 */
+						if ((group = this.access(group, store, connection)) != null) {
+							tran = true;
+							isForward = true;
+							/* pin 삭제 */
+							group.getStoreInfoList().get(0).getEmpList().get(0).setEmpPin(null);
+
+							this.session.setAttribute("AccessInfo", group);
+							this.request.setAttribute("options", this.storeList());
+							page = !group.getStoreInfoList().get(0).getEmpList().get(0).getEmpLevCode().equals("L3")
+									? "mgr.jsp"
+									: "sales.jsp";
+						} else {
+							try {
+								page += "?message=" + URLEncoder.encode("네트워크가 불안정합니다.", "UTF-8");
+							} catch (UnsupportedEncodingException e) {
+								e.printStackTrace();
 							}
 						}
+
 					}
 				}
 			}
@@ -181,30 +220,41 @@ public class Auth {
 			dao.closeConnection(connection);
 			dao = null;
 			this.request.setAttribute("options", this.storeList());
-		}else {
+		} else {
 			/* Browser 정보 */
-			String browserInfo = ((GroupBean)session.getAttribute("AccessInfo")).getStoreInfoList().get(0).getEmpList().get(0).getAccessList().get(0).getAccessBrowser();
+			String browserInfo = ((GroupBean) session.getAttribute("AccessInfo")).getStoreInfoList().get(0).getEmpList()
+					.get(0).getAccessList().get(0).getAccessBrowser();
 
 			/* 새로고침 영역 */
-			if(this.isAccess(
-					((GroupBean)session.getAttribute("AccessInfo"))
-					.getStoreInfoList().get(0), true)) {
+			if (this.isAccess(((GroupBean) session.getAttribute("AccessInfo")).getStoreInfoList().get(0), true)) {
 				this.request.setAttribute("options", this.storeList());
 				System.out.println("세션은 있고 자신의 로그인 기록이 있는 경우");
 				System.out.println(browserInfo);
 				page = "manager.jsp";
 				isForward = true;
-			}else {
+			} else {
 				System.out.println("세션은 있고 자신의 로그아웃 기록이 있는 경우");
 				System.out.println(browserInfo);
 				session.invalidate();
 			}
 		}
-		
-		
+
 		action.setPage(page);
 		action.setRedirect(!isForward);
 		return action;
+	}
+
+	private GroupBean access(GroupBean group, StoreBean store, Connection connection) {
+		
+		if (this.convertToBoolean(this.dao.insAccessLogin(connection, store))) {
+			group = this.dao.getAccessInfo(connection, store);
+
+			if (group.getStoreInfoList().get(0).getEmpList().get(0).getEmpLevCode().equals("L1")) {
+				this.dao.getStoreInfo(connection, group);
+			}
+		}
+
+		return group;
 	}
 
 //	private ActionBean accessCtl() {
@@ -298,13 +348,13 @@ public class Auth {
 //
 //		return action;
 //	}
-	
+
 	private String storeList() {
-		
+
 		StringBuffer sb = new StringBuffer();
 		sb.append("<select name=\"storeCode\" class=\"normal\">");
-		for(StoreBean store : ((GroupBean)this.session.getAttribute("AccessInfo")).getStoreInfoList()) {
-			sb.append("<option value=\""+ store.getStoreCode()+"\">"+store.getStoreName()+"</option>");
+		for (StoreBean store : ((GroupBean) this.session.getAttribute("AccessInfo")).getStoreInfoList()) {
+			sb.append("<option value=\"" + store.getStoreCode() + "\">" + store.getStoreName() + "</option>");
 		}
 		sb.append("</select>");
 		return sb.toString();
@@ -428,25 +478,22 @@ public class Auth {
 
 		return action;
 	}
-	
+
 	boolean isAccess(StoreBean store, Boolean isSession) {
 		AuthDataAccessObject dao = new AuthDataAccessObject();
-		boolean isAccess = false, 
-				isDao = dao != null? true:false;
+		boolean isAccess = false, isDao = dao != null ? true : false;
 
-		if(!isDao) {
+		if (!isDao) {
 			Connection connection = dao.openConnection();
 			connection = dao.openConnection();
 
-			isAccess = this.convertToBoolean(
-					dao.isAccess(connection, store, isSession));	
+			isAccess = this.convertToBoolean(dao.isAccess(connection, store, isSession));
 
 			dao.closeConnection(connection);
 			dao = null;
 		} else {
 			Connection connection = dao.openConnection();
-			isAccess = this.convertToBoolean(
-					dao.isAccess(connection, store, isSession));
+			isAccess = this.convertToBoolean(dao.isAccess(connection, store, isSession));
 		}
 
 		return isAccess;

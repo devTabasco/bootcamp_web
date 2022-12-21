@@ -39,16 +39,17 @@ public class GoodsDataAccessObject extends DataAccessObject {
 		try {
 			this.ps = connection.prepareStatement(query);
 			this.ps.setNString(1, clientData.getStoreCode());
-			this.ps.setNString(1, clientData.getLevInfo().get(0).getLevCode());
+			this.ps.setNString(2, clientData.getLevInfo().get(0).getLevCode());
 			
 			this.rs = this.ps.executeQuery();
 			
 			if(rs.isBeforeFirst()) {
+				System.out.println("테스트");
 					categoryList = new ArrayList<CategoriesBean>();
 					while(rs.next()) {
 						category = new CategoriesBean();
 						category.setLevCode(rs.getNString("LEVCODE"));
-						category.setLevCode(rs.getNString("LEVNAME"));
+						category.setLevName(rs.getNString("LEVNAME"));
 						
 						categoryList.add(category);
 					}

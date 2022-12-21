@@ -26,6 +26,7 @@
 					<button id="login" class="account" onClick="registration()">로그인</button>
 					<a href="group-step1.jsp"><button id="login" class="account">회원가입</button></a>
 				</div>
+				${param.message }
 			</div>
 		</div>
 	</div>
