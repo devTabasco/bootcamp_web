@@ -9,14 +9,14 @@
 <script src="resources/js/common.js"></script>
 </head>
 <!--  -->
-<body onLoad="pageInit('${param.message}', '${AccessInfo.storeInfoList[0].empList[0].accessList[0].accessDateTime }')">
+<body onLoad="pageInit('${param.message}', '${AccessInfo.storeInfoList[0].empList[0].accessList[0].accessDateTime }','${param.current }')">
 	<div id="wrap">
 		<div id="side">
 			<div id="store">
 					${options}
 			</div>
 			<div id="emp">
-				<span>${AccessInfo.storeInfoList[0].empList[0].empName }</span><span> 대표님</span>
+				<span>${AccessInfo.storeInfoList[0].empList[0].empName }</span><span> ${AccessInfo.storeInfoList[0].levInfo[0].levName }</span>
 			</div>
 			<div id="menu">
 				<div class="menu" onClick="menuClick(0)">매출분석</div>
@@ -76,6 +76,7 @@
 		</div>
 	</div>
 	<script>
+	const itemCode = [["C", "상품분류"], ["S", "상품상태"], ["L", "직원등급"], ["D", "가격분류"], ["Z", "구역분류"], ["O", "주문상태"], ["P", "결제상태"]];
 		const menuList = ["종합 분석", "일자별 분석", "상품별 분석", "결재 수단별 분석", 
 			                "고객별 분석", "상품 분류 관리", "상품 정보 관리", 
 			                "가격 정보 관리", "판매 구역 관리", "테이블 등록", "테이블배치", 
@@ -125,10 +126,13 @@
 		function selelctCategoryCtl(storeCode){
 			/* storeCode >> C? */
 			selectCategoryStep1(storeCode);
+			if(current != ''){
+				selectCategoryStep2(JSON.parse(jsonString), current.split(":")[2], itemCode[current.split(":")[3]][0]);
+			}
 		}
 		
 		function selectCategoryStep1(storeCode){
-			const itemCode = [["C", "상품분류"], ["S", "상품상태"], ["L", "직원등급"], ["D", "가격분류"], ["Z", "구역분류"], ["O", "주문상태"], ["P", "결제상태"]];
+			
 			const content = document.getElementById("content");
 						
 			const div = createDIV("itemList", "itemZone", "");
@@ -164,8 +168,59 @@
 			}
 		}
 		
-		function selelctCategoryStep2(){
+		function selectCategoryStep2(jsonData, storeCode, levCode){
+			const content = document.getElementById("content");
+			const categoryZone = createDIV("categoryZone", "", "");
+			const categoryAdd = createDIV("categoryAdd", "categoryZone add", "");
+			const input = createInputBox("text", "levName", "", "추가할 분류 이름을 입력하세요");
+			input.setAttribute("class", "box big");
+			const divBtn = createDIV("", "addBtn", "addCategory('" + storeCode +"', '" + levCode + "')");
+			divBtn.innerText = "ADD ITEM";
+			categoryAdd.appendChild(input);
+			categoryAdd.appendChild(divBtn);
+			const categoryList = createDIV("categoryList", "categoryZone list", "");
 			
+			const title = createDIV("", "record title", "");
+			title.appendChild(createDiv("", "col title", "", "항목코드"));
+			title.appendChild(createDiv("", "col title", "", "항목이름"));
+			categoryList.appendChild(title);
+			
+			jsonData.forEach(function(item){
+				const record = createDIV("", "record content", "showCommunicationBox");
+				record.appendChild(createDiv("", "col content", "", item.levCode));
+				record.appendChild(createDiv("", "col content", "", item.levName));
+				categoryList.appendChild(record);
+			});
+					
+			categoryZone.appendChild(categoryAdd);
+			categoryZone.appendChild(categoryList);
+			content.appendChild(categoryZone);
+			
+		}
+		
+		function addCategory(storeCode, levCode){
+			const levName = document.getElementsByName("levName")[0];
+			if(lengthCheck(levName)){
+				const form  = createForm("", "InsCategory", "post");
+				const hidden = [createInputBox("hidden", "storeCode", storeCode, ""), 
+												createInputBox("hidden", "levCode", levCode, ""),
+												createInputBox("hidden", "levName", levName.value, ""),
+												createInputBox("hidden", "currentIdx", current, "")];
+				/* hidden >> form */
+				
+				form.appendChild(hidden[0]);
+				form.appendChild(hidden[1]);
+				form.appendChild(hidden[2]);
+				form.appendChild(hidden[3]);
+				
+				/* form >> body */
+				document.body.appendChild(form);
+				
+				form.submit();
+				
+			}else{
+				levName.setAttribute("placeholder", "2~20자 이내로 입력하세요");
+			}		
 		}
 		
 		function selectGoodsManagement(storeCode){

@@ -19,10 +19,20 @@ function createDIV(objId, className, funcName){
 	return div;
 }
 
+function createDiv(objId, className, funcName, innerText){
+	const div = document.createElement("div");
+	if(objId != "") div.setAttribute("id",objId);
+	div.setAttribute("class",className);
+	if(funcName != "") div.setAttribute("onClick",funcName);
+	if(innerText != "") div.innerText = innerText;
+	
+	return div;
+}
+
  //<input type="text" name="groupName" placeholder="GROUP NAME" />
  function lengthCheck(obj) {
 	//서버로 전송할 데이터 길이의 유효성 판단
-	const data = [["groupName",2,20] , ["groupCeo",2,5] , ["groupPin",6,6]];
+	const data = [["groupName",2,20] , ["groupCeo",2,5] , ["groupPin",6,6], ["levName",2,20]];
 	let result = false;
 	for(let i=0;i<data.length;i++){
 		if(obj.getAttribute("name") == data[i][0]){
@@ -98,7 +108,7 @@ function movePage(targetPage){
 }
 
 /* Page Initialize */
-function pageInit(message, accessInfo){
+function pageInit(message, accessInfo, current){
 	publicIp = getPublicIp();
 	let serverMessage;
 	if(message != ''){
@@ -119,6 +129,10 @@ function pageInit(message, accessInfo){
 	}
 	
 	if(jsonString != ''){
+		mgrInit();
+	}
+	
+	if(current != ''){
 		mgrInit();
 	}
 	

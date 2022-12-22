@@ -135,6 +135,7 @@ public class Auth {
 			String browserInfo = (store.getEmpList().get(0).getAccessList().get(0).getAccessBrowser());
 			System.out.println(browserInfo + " : browserInfo");
 			/* 2. DAO */
+			dao = new AuthDataAccessObject();
 			Connection connection = dao.openConnection();
 			dao.modifyTranStatus(connection, false);
 
@@ -480,7 +481,6 @@ public class Auth {
 	}
 
 	boolean isAccess(StoreBean store, Boolean isSession) {
-		AuthDataAccessObject dao = new AuthDataAccessObject();
 		boolean isAccess = false, isDao = dao != null ? true : false;
 
 		if (!isDao) {

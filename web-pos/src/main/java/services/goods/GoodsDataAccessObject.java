@@ -66,7 +66,7 @@ public class GoodsDataAccessObject extends DataAccessObject {
 	int getMaxCode(Connection connection, StoreBean clientData) {
 		int maxIdx = 0;
 		
-		String query = "SELECT SUBSTR(MAX(SC_CODE),1,1) AS MAXIDX FROM SC WHERE SC_STCODE = ? AND SUBSTR(SC_CODE,1,1) = ? ";
+		String query = "SELECT SUBSTR(MAX(SC_CODE),2,1) AS MAXIDX FROM SC WHERE SC_STCODE = ? AND SUBSTR(SC_CODE,1,1) = ? ";
 		
 		try {
 			this.ps = connection.prepareStatement(query);
@@ -100,7 +100,12 @@ public class GoodsDataAccessObject extends DataAccessObject {
 			this.ps.setNString(2, clientData.getLevInfo().get(0).getLevCode());
 			this.ps.setNString(3, clientData.getLevInfo().get(0).getLevName());
 			
+			System.out.println(clientData.getStoreCode());
+			System.out.println(clientData.getLevInfo().get(0).getLevCode());
+			System.out.println(clientData.getLevInfo().get(0).getLevName());
+			
 			result = this.ps.executeUpdate();
+			System.out.println(result+"insert 확인");
 		} catch (SQLException e) {
 			// TODO: handle exception
 		}

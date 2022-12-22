@@ -36,6 +36,7 @@ public class GoodsManagement {
 				action = this.getCategory();
 				break;
 			case 2:
+				action = this.insCategoryCtl();
 				break;
 			case 0:
 				break;
@@ -103,7 +104,46 @@ public class GoodsManagement {
 		ActionBean action = new ActionBean();
 		String page = "index.jsp", message = null;
 		boolean redirect = true, tran = false;
+		StoreBean store = new StoreBean();
+		CategoriesBean category = new CategoriesBean();
+		ArrayList<CategoriesBean> categoryList = new ArrayList<CategoriesBean>();
+		
+		/* ClientData --> StoreBean */
+		System.out.println(this.request.getParameter("storeCode"));
+		System.out.println(this.request.getParameter("levCode"));
+		System.out.println(this.request.getParameter("levName"));
+		System.out.println(this.request.getParameter("currentIdx"));
+		
+		store.setStoreCode(this.request.getParameter("storeCode"));
+		category.setLevCode(this.request.getParameter("levCode"));
+		category.setLevName(this.request.getParameter("levName"));
+		
+		categoryList.add(category);
+		store.setLevInfo(categoryList);
+		
+		/* DAO : open modify set modify close */
+		this.connection = this.dao.openConnection();
+		dao.modifyTranStatus(connection, false);
 
+		//dao 전달
+		int getMax = 0;
+		if(convertToBoolean(getMax = dao.getMaxCode(connection, store))) {
+			store.getLevInfo().get(0).setLevCode(category.getLevCode() + getMax);
+		}
+		
+		if(convertToBoolean(this.dao.insCategoryItem(connection, store))){
+			this.request.setAttribute("currentIdx", this.request.getParameter("currentIdx"));
+			page = "GetGoodsCategory";
+			redirect = false;
+		};
+		
+		dao.setTransaction(true, connection);
+		dao.modifyTranStatus(connection, true);
+		this.dao.closeConnection(connection);
+		this.dao = null;
+		
+		/* forward */
+		
 		action.setPage(page);
 		action.setRedirect(redirect);
 		return action;
@@ -123,6 +163,10 @@ public class GoodsManagement {
 		int maxIdx = -1;
 
 		return maxIdx;
+	}
+	
+	private boolean convertToBoolean(int value) {
+		return value > 0 ? true : false;
 	}
 
 }

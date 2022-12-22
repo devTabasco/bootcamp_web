@@ -20,7 +20,7 @@ import services.registration.Registration;
 /**
  * Servlet implementation class FrontController
  */
-@WebServlet({"/GetGoodsCategory","/Landing","/MovePageStore","/MovePage", "/Join", "/GroupDupCheck","/MemberJoin", "/RegStore", "/RegEmp", "/Access", "/AccessOut"})
+@WebServlet({"/InsCategory","/GetGoodsCategory","/Landing","/MovePageStore","/MovePage", "/Join", "/GroupDupCheck","/MemberJoin", "/RegStore", "/RegEmp", "/Access", "/AccessOut"})
 public class FrontController extends HttpServlet {
 	//session ID를 생성해주는 객체
 	private static final long serialVersionUID = 1L;
@@ -76,6 +76,9 @@ public class FrontController extends HttpServlet {
 		}else if(jobCode.equals("GetGoodsCategory")) {
 			goodsManagement = new GoodsManagement();
 			action = goodsManagement.backController(1, request);
+		}else if(jobCode.equals("InsCategory")) {
+			goodsManagement = new GoodsManagement();
+			action = goodsManagement.backController(2, request);
 		}
 		
 		if(action.isRedirect()) {
