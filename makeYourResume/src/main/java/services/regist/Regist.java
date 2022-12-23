@@ -5,22 +5,28 @@ import java.net.URLEncoder;
 import java.sql.Connection;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 
 import beans.ActionBean;
 import beans.MemberBean;
 
 public class Regist {
 	HttpServletRequest request;
+	HttpSession session;
 
 	public ActionBean backController(int serviceCode, HttpServletRequest request) {
 		ActionBean action = new ActionBean();
 		this.request = request;
+		session = this.request.getSession();
 
 		switch (serviceCode) {
 		case 1:
 			action = this.registCtl();
 			break;
 		case 2:
+			action = this.addInfo();
 			break;
 
 		default:
@@ -29,6 +35,46 @@ public class Regist {
 
 		return action;
 
+	}
+	
+	private ActionBean addInfo() {
+		ActionBean action = new ActionBean();
+		MemberBean memberBean = null;
+		String page = "index.jsp", message = null;
+		boolean redirect = true;
+		
+		RegistDataAccessObject dao = new RegistDataAccessObject();
+		memberBean = ((MemberBean)this.session.getAttribute("memberInfo"));
+		memberBean.setMemberBirth(this.request.getParameter("memberBirth").replaceAll("-", ""));
+		memberBean.setMemberHomePhone(this.request.getParameter("memberHomePhone"));
+		memberBean.setMemberSex(this.request.getParameter("memberSex"));
+		memberBean.setMemberAddr(this.request.getParameter("memberAddr"));
+		
+		System.out.println(this.request.getParameter("memberAddr"));
+		
+		/* 2. DAO Allocation & DAO Open */
+		Connection connection = dao.openConnection();
+		/* 2-1. Transaction Start */
+		dao.setAutoCommitController(connection, false);
+		
+		if(convertToBoolean(dao.insertAddInfo(connection, memberBean))) {
+			page = "makeResume.jsp";
+			redirect = false;
+			
+			this.session.setAttribute("memberInfo", memberBean);
+		}
+		
+		/* 2-4. Transaction End */
+		dao.setTransaction(true, connection);
+		dao.setAutoCommitController(connection, true);
+		
+		/* 2-5. DAO Close */
+		dao.closeConnection(connection);
+		
+		action.setPage(page);
+		action.setRedirect(redirect);
+		
+		return action;
 	}
 
 	private ActionBean registCtl() {
@@ -48,8 +94,8 @@ public class Regist {
 
 		/* 1. req --> GroupBean */
 		MemberBean memberBean = new MemberBean();
-		memberBean.setMemberId(this.request.getParameter("memberId"));
-		memberBean.setMemberPhone(this.request.getParameter("memberPhone"));
+		memberBean.setMemberName(this.request.getParameter("memberName"));
+		memberBean.setMemberPhone(this.request.getParameter("memberPhone").replace("-", ""));
 		memberBean.setMemberEmail(this.request.getParameter("memberEmail"));
 		memberBean.setMemberPassword(this.request.getParameter("memberPassword"));
 

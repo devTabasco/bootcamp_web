@@ -59,7 +59,7 @@
 										<div id="joinDataLayer">
 											<div class="form-outline mb-4">
 												<input type="email" id="form2Example11" class="form-control"
-													placeholder="핸드폰 번호 또는 이메일을 입력하세요." name="memberId" />
+													placeholder="핸드폰 번호 또는 이메일을 입력하세요." name="memberEmail" />
 											</div>
 
 											<div class="form-outline mb-4">
@@ -105,7 +105,7 @@
 		const form = createForm("", "Access", "post");
 		const joinDataLayer = document.getElementById("joinDataLayer");
 
-		form.appendChild(document.getElementsByName("memberId")[0]);
+		form.appendChild(document.getElementsByName("memberEmail")[0]);
 		form.appendChild(document.getElementsByName("memberPassword")[0]);
 
 		joinDataLayer.appendChild(form);

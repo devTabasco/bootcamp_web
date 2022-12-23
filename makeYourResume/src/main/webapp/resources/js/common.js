@@ -42,20 +42,62 @@ function accessLengthCheck(obj) {
 	return result;
 }
 
+/* FORM 생성 */
 function createForm(name, action, method){
-	publicIp = getPublicIp();
 	const form = document.createElement("form");
 	if(name != "") form.setAttribute("name", name);
 	form.setAttribute("action", action);
 	form.setAttribute("method", method);
 	return form;
 }
+
+/* DIV 생성 */
+function createDIV(objId, className, funcName){
+	const div = document.createElement("div");
+	if(objId != '') div.setAttribute("id", objId);
+	div.setAttribute("class", className);
+	if(funcName != '') div.setAttribute("onClick", funcName);
 	
-function moveMainPage(){
-	location.href = "/web-pos";
+	return div;
 }
-function movePrePage(previous){
-	location.href = "/web-pos/" + previous!=null?previous:"";
+	
+/* Page Initialize */
+function pageInit(message, accessInfo){
+	publicIp = getPublicIp();
+	let serverMessage;
+	if(message != ''){
+		serverMessage = message.split(":"); 
+		let content = document.getElementById("messageContent");
+		document.getElementById("messageTitle").innerText = serverMessage[0];
+		content.innerText = serverMessage[1];
+		document.getElementById("background").style.display = "block";
+		
+		if(serverMessage[2] == "1") content.style.lineHeight = "calc(37.5vh*0.54)";
+		if(serverMessage[2] == "2") content.style.lineHeight = "calc(37.5vh*0.54/2)";
+		if(serverMessage[2] == "3") content.style.lineHeight = "calc(37.5vh*0.54/3)";
+		if(serverMessage[2] == "4") content.style.lineHeight = "calc(37.5vh*0.54/4)";
+		 
+	}
+	if(accessInfo != ''){
+		document.getElementById("accessInfo").innerText =	"로그아웃(Access Time : " + accessInfo.substr(8,2) + ":" + accessInfo.substr(10, 2) + ":" + accessInfo.substr(12, 2) + ")";
+	}
+	
+	if(jsonString != ''){
+		mgrInit();
+	}
+	
+}
+
+function disableMessage(){
+	document.getElementById("messageTitle").innerText = "";
+	document.getElementById("messageContent").innerText = "";
+	document.getElementById("background").style.display = "none";
+}
+
+function accessOut(){
+	const form = createForm("", "AccessOut", "post");
+	document.body.appendChild(form);
+	form.submit();
 }
 
 /* Input Box 생성*/

@@ -51,16 +51,19 @@
         <!-- Large size에서만 2개(=12/6)의 column으로 보여주기 -->
         <div class="col-lg-6">
           <h1>손 쉽게 나만의 이력서를 만들어보세요!</h1>
-          <a href="makeResume.jsp"><button type="button" class="btn btn-lg btn-primary">지금 이력서 만들러 가기!</button></a>
+          <a href="login.jsp"><button type="button" class="btn btn-lg btn-primary">지금 이력서 만들러 가기!</button></a>
           </div>
         <div class="col-lg-6" id="main-image">
           <img class="title-image" src="resources/images/career.png" alt="career-img">
         </div>
       </div>
     </div>
-    
     </section>
-
+<script type="text/javascript">
+	function serverCall() {
+		//로그인 체크 후 로그인 페이지 or 이력서 조회페이지
+		
+	}
+</script>
 </body>
-
 </html>

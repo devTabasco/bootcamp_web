@@ -16,7 +16,7 @@ import services.regist.Regist;
 /**
  * Servlet implementation class FrontController
  */
-@WebServlet({"/FrontController", "/Access", "/regist"})
+@WebServlet({"/FrontController", "/Access", "/regist", "/addInfo"})
 public class FrontController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	ActionBean action = null;
@@ -53,6 +53,9 @@ public class FrontController extends HttpServlet {
 		if(jobCode.equals("regist")) {
 			regist = new Regist();
 			action = regist.backController(1, request);
+		}else if(jobCode.equals("addInfo")) {
+			regist = new Regist();
+			action = regist.backController(2, request);
 		}
 		
 		/* Auth */

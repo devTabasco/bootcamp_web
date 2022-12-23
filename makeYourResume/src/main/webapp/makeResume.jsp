@@ -36,8 +36,8 @@
 <body>
 
 	<div id="resume-body">
-		<a href="index.jsp" style="text-decoration-line: none; color: #ff4c68"><h1>Make
-				Your Resume</h1></a>
+		<a href="index.jsp" style="text-decoration-line: none; color: #ff4c68">
+		<h1>Make Your Resume</h1></a>
 	</div>
 	<div class="row">
 		<div class="col-9 resume-left">
@@ -47,27 +47,27 @@
 						<h4>인적사항</h4>
 						<div class="row">
 							<div class="col col-lg-3">
-								<input class="input-data form-control form-control-lg" type="text" placeholder="이름">
+								<input class="input-data form-control form-control-lg" type="text" placeholder="이름" value="${memberInfo.memberName}" ReadOnly>
 							</div>
 							<div class="col col-lg-3">
-								<input class="input-data form-control form-control-lg" type="text" placeholder="생년월일">
+								<input class="input-data form-control form-control-lg" type="text" placeholder="생년월일" value="${memberInfo.memberBirth}" ReadOnly>
 							</div>
 							<div class="col col-lg-2">
-								<input class="input-data form-control form-control-lg" type="text" placeholder="성별">
+								<input class="input-data form-control form-control-lg" type="text" placeholder="성별" value="${memberInfo.memberSex}" ReadOnly>
 							</div>
 							<div class="col col-lg-4">
-								<input class="input-data form-control form-control-lg" type="text" placeholder="이메일">
+								<input class="input-data form-control form-control-lg" type="text" placeholder="이메일" value="${memberInfo.memberEmail}" ReadOnly>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col col-lg-3">
-								<input class="input-data form-control form-control-lg" type="text" placeholder="전화번호">
+								<input class="input-data form-control form-control-lg" type="text" placeholder="전화번호" value="${memberInfo.memberHomePhone}" ReadOnly>
 							</div>
 							<div class="col col-lg-3">
-								<input class="input-data form-control form-control-lg" type="text" placeholder="휴대폰번호">
+								<input class="input-data form-control form-control-lg" type="text" placeholder="휴대폰번호" value="${memberInfo.memberPhone}" ReadOnly>
 							</div>
 							<div class="col col-lg-6">
-								<input class="input-data form-control form-control-lg" type="text" placeholder="주소">
+								<input class="input-data form-control form-control-lg" type="text" placeholder="주소" value="${memberInfo.memberAddr}" ReadOnly>
 							</div>
 						</div>
 					</div>
@@ -314,7 +314,7 @@
 				<input type='button' id="menu-btn btn-8" value='어학' onclick='toggleDiv(8)' /><br>
 				<p>자기소개</p>
 				<input type='button' id="menu-btn btn-9" value='자기소개' onclick='toggleDiv(9)' /><br>
-
+				<button style="background-color: #ff4c68" type="button" class="btn btn-primary" onClick="serverCall()">저장하기</button>
 			</div>
 		</div>
 	</div>
@@ -324,6 +324,10 @@
 
 	<!-- 박스 추가되는 영역 -->
 	<script>
+		function serverCall(){
+			alert("servercall");
+		}
+	
 		function toggleDiv(i) {
 			const div = document.getElementById('target-' + i);
 			const btn = document.getElementById('btn-' + i);
