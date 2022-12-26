@@ -1,0 +1,27 @@
+@charset "UTF-8";
+
+body{
+	margin-top: 0; margin-left: 0;  margin-bottom:0;
+}
+#wrap{
+	width:100vw; height:100vh;
+}
+#menu{float:left;
+	width: 10%; height: 100%;
+	background-color: rgba(0, 0, 129, 1);
+}
+#top{float:left;
+	width: 90%; height: 10%; 
+	background-color:rgba(255, 187, 0, 1);
+}
+#order{float:left;
+	width: 60%; height: 80%; 
+}
+#payment{float:left;
+	width: calc(30%-2px); height: 80%; 
+	border-left:2px solid rgba(255, 187, 0, 1);
+}
+#footer{float:left;
+	width: 90%; height: 10%;
+	background-color:rgba(255, 187, 0, 1);
+}
