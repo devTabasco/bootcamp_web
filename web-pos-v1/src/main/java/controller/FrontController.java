@@ -14,7 +14,7 @@ import services.auth.Auth;
 import services.goods.GoodsManagement;
 import services.registration.Registration;
 
-@WebServlet({"/Landing","/MovePage", "/Join", "/GroupDupCheck", "/MemberJoin", "/RegStore", "/RegEmp", "/Access", "/AccessOut", "/GetGoodsCategoryList", "/InsCategory", "/UpdCategory","/InsGoodsCategory","/UpdGoodsCategory"})
+@WebServlet({"/Landing","/MovePage", "/Join", "/GroupDupCheck", "/MemberJoin", "/RegStore", "/RegEmp", "/Access", "/AccessOut", "/GetGoodsCategoryList", "/InsCategory", "/UpdCategory","/InsGoodsCategory","/UpdGoodsCategory","/GetGoodsList"})
 public class FrontController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -36,6 +36,7 @@ public class FrontController extends HttpServlet {
 		else if(jobCode.equals("GetGoodsCategoryList")) action = new GoodsManagement(req).backController(1);
 		else if(jobCode.equals("InsGoodsCategory")) action = new GoodsManagement(req).backController(2);
 		else if(jobCode.equals("UpdGoodsCategory")) action = new GoodsManagement(req).backController(3);
+		else if(jobCode.equals("GetGoodsList")) action = new GoodsManagement(req).backController(4);
 		else {
 			action = new ActionBean();
 			action.setPage("index.jsp");

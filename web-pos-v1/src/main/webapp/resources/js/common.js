@@ -1,6 +1,14 @@
 /**
  * Smart POS - Common Function
  */
+ /* keyEvent 새로고침 */
+//document.onkeydown = function(event){
+//	const key = event.keyCode;
+//	if(key == 116 || (event.ctrlKey && key == 82) || (event.altKey && key == 37)){
+//		event.preventDefault();
+//	}
+//};
+
  /* PUBLIC IP 수집 */
 let publicIp;
 function getPublicIp(){
@@ -69,6 +77,17 @@ function createDatePicker(name, minDate, maxDate){
 	return date;	
 } 
 
+function createSelect(name, options, className){
+	const select = document.createElement("select");
+	for(idx=0; idx<options.length; idx++){
+		const option = document.createElement("option");
+		option.setAttribute("value", options[idx].levCode);
+		option.innerText = options[idx].levName;
+		select.appendChild(option);
+	}
+	select.setAttribute("class", className);
+	return select;
+}
 /* 페이지 이동 */
 function movePage(targetPage){
 	const form = createForm("", "MovePage", "get");
@@ -106,7 +125,7 @@ function pageInit(message, accessInfo){
 	if(accessInfo != ''){
 		document.getElementById("accessInfo").innerText =	"로그아웃(Access Time : " + accessInfo.substr(8,2) + ":" + accessInfo.substr(10, 2) + ":" + accessInfo.substr(12, 2) + ")";
 	}
-	
+
 	if(jsonString != ''){
 		mgrInit();
 	}

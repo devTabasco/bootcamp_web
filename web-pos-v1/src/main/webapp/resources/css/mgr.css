@@ -124,27 +124,29 @@ ul > li:hover {
 	cursor:pointer;
 	transition : all ease 1s;
 }
-.item:hover, .addBtn:hover{
+.item:hover, .addBtn:hover, .updBtn:hover{
 	background-color:rgba(255, 187, 0, 1);
 	transform:rotateX(360deg);
 }
 
-#categoryZone{position:relative;float:left;
+#categoryZone, #goodsZone {position:relative;float:left;
 	width:72%; height:90%;
 	transform:translate(7%,5%);
 }
-#itemList:hover, .categoryZone.add:hover, .categoryZone.list:hover {
+#itemList:hover, 
+.categoryZone.add:hover, .categoryZone.list:hover, 
+.goodsZone.search:hover, .goodsZone.list:hover {
 	border:4px solid rgba(255, 187, 0, 1);
 }
-.categoryZone{position:relative;
+.categoryZone, .goodsZone{position:relative;
 	border: 4px solid rgba(0, 16, 84, 1);border-radius:0.5rem;
 	transition:border ease 1s;
 }
 
-.categoryZone.add{
+.categoryZone.add, .goodsZone.search{
 	width:100%; height:16%;
 }
-.categoryZone.list{margin-top:3%;
+.categoryZone.list, .goodsZone.list {margin-top:3%;
 	width:100%; height:78.5%;
 	background-image: url("../images/content.jpg"); background-size:cover;
 	background-position:center;
@@ -159,7 +161,7 @@ ul > li:hover {
 	text-align:center;
 	transition: border ease 1s;
 }
-.box.big:focus{
+.box.big:focus, .updBox:focus{
 	border: 2px solid rgba(255, 187, 0, 1);
 	background-color: rgba(255, 187, 0, 0.3);
 }
@@ -184,6 +186,10 @@ ul > li:hover {
 	width:50%; height:100%;
 	text-align:center;
 }
+.goodsCol {position:relative;float:left;
+	width:calc(100% / 6); height:100%;
+	text-align:center;	
+}
 .record.content{
 	background-color:rgba(0, 16, 84, 0.2);
 	border-bottom:1px dotted rgba(255, 187, 0, 1);
@@ -196,16 +202,36 @@ ul > li:hover {
 	cursor:pointer;
 }
 
-.userInputBackground{position:absolute; top:35%;
-	width:100vw; height:30vh;
-	background-color: rgba(255,255,255, 0.7);
+.userInputBackground{position:absolute; top:10%; left:15%;
+	width:85%; height:80%;
+	background-color: rgba(0, 0, 0, 0.9);
 }
-.commandZone{position:relative; left:10%;}
-.inputZone{float:left;}
+.commandZone{position:absolute; margin-top:20%; margin-left:50%;
+	height:30%; 
+	border-radius:0.5rem;
+	transform:translateX(-45%);
+}
+.inputZone{float:left;
+	width:60%; height:30%;
+}
 .transferZone{float:left;
-	width:20vw;}
-.addBtn.add{float:left;
-	width: 10vw; 
+	width:40%; height:30%; 
+}
+.updBox{float:left;
+	height:100%;
+	border: 2px solid rgba(255,255,255,1);border-radius:0.5rem;	outline:none;
+	background-color: rgba(0, 16, 84, 0.5); color:rgba(255, 187, 0, 1);
+	font-family: 'Do Hyeon', sans-serif;	font-size: 2.2vw;
+	text-align:center;
+	transition: border ease 1s;	
+}
+.updBtn{float:right; margin-right:0.5%;
+ 	width:40%; height:100%; line-height:calc(80vh*0.3*0.5*0.6);
+ 	border: 2px solid rgba(255, 255, 255, 1); border-radius:0.5rem;
+	background-color: rgba(0, 16, 84, 0.5); color:rgba(255, 255, 255, 1);
+	font-size:2vw; text-align:center;
+	cursor:pointer;
+	transition : all ease .5s;
 }
 
 

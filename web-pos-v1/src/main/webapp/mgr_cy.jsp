@@ -71,7 +71,6 @@
 			</div>
 		</div>
 	</div>
-	<input type="file" />
 	<script>
 		const itemCode = [[ "매출분석", "종합분석", "매출 종합 분석", "" ],
 				[ "매출분석", "일자별분석", "판매 일자별 분석", "" ],
@@ -79,12 +78,12 @@
 				[ "매출분석", "결제수단별분석", "결제 수단별 분석", "" ],
 				[ "매출분석", "고객별분석", "고객별 분석", "" ],
 				[ "C", "상품분류", "상품 분류 코드 관리", ["GetGoodsCategoryList"], ["InsGoodsCategory", "levName"], ["UpdGoodsCategory", [1, "levName", "상품분류명"]]],
-				[ "S", "상품상태", "상품 상태 코드 관리", ["GetGoodsCategoryList"], ["InsGoodsCategory", "levName"], ["UpdGoodsCategory", 1, "상품상태명"]],
-				[ "L", "직원등급", "직원 등급 코드 관리", ["GetGoodsCategoryList"], ["InsGoodsCategory", "levName"], ["UpdGoodsCategory", 1, "직원등급명"]],
-				[ "D", "가격분류", "상품 가격 코드 관리", ["GetGoodsCategoryList"], ["InsGoodsCategory", "levName"], ["UpdGoodsCategory", 1, "가격타입명"]],
-				[ "Z", "구역분류", "판매 구역 코드 관리", ["GetGoodsCategoryList"], ["InsGoodsCategory", "levName"], ["UpdGoodsCategory", 1, "매장구역명"]],
-				[ "O", "주문상태", "주문 상태 코드 관리", ["GetGoodsCategoryList"], ["InsGoodsCategory", "levName"], ["UpdGoodsCategory", 1, "주문상태명"]],
-				[ "P", "결제상태", "결제 상태 코드 관리", ["GetGoodsCategoryList"], ["InsGoodsCategory", "levName"], ["UpdGoodsCategory", 1, "결제상태명"]],
+				[ "S", "상품상태", "상품 상태 코드 관리", ["GetGoodsCategoryList"], ["InsGoodsCategory", "levName"], ["UpdGoodsState", 1, "상품상태명"]],
+				[ "L", "직원등급", "직원 등급 코드 관리", ["GetGoodsCategoryList"], ["InsGoodsCategory", "levName"], ["UpdEmpLev", 1, "직원등급명"]],
+				[ "D", "가격분류", "상품 가격 코드 관리", ["GetGoodsCategoryList"], ["InsGoodsCategory", "levName"], ["UpdPriceCategory", 1, "가격타입명"]],
+				[ "Z", "구역분류", "판매 구역 코드 관리", ["GetGoodsCategoryList"], ["InsGoodsCategory", "levName"], ["UpdZone", 1, "매장구역명"]],
+				[ "O", "주문상태", "주문 상태 코드 관리", ["GetGoodsCategoryList"], ["InsGoodsCategory", "levName"], ["UpdOrderState", 1, "주문상태명"]],
+				[ "P", "결제상태", "결제 상태 코드 관리", ["GetGoodsCategoryList"], ["InsGoodsCategory", "levName"], ["UpdPaymentState", 1, "결제상태명"]],
 				[ "상품관리", "상품관리", "상품 정보 관리", ["GetGoodsList"], ["SelGoods", "goodsInfo"], ["InsGoods", 1, ""], ["UpdGoods", 1, ""]],
 				[ "상품관리", "가격관리", "상품 가격 관리", ["GetGoodsList"], ["SelGoods", "goodsInfo"], ["InsCostPrice", 1, ""]],
 				[ "매장관리", "판매구역관리", "판매 구역 정보 관리", "" ],
@@ -95,18 +94,18 @@
 		const menu = document.getElementsByClassName("menu");
 		const subMenu = document.getElementsByTagName("ul");
 
-		let jsonString = '${serverData}';
+		const jsonString = '${serverData}';
 		let selectedIdx = [];
 
 		function mgrInit() {
 			alert("After Sever Call : ${param.currentIdx}");
-			//alert(jsonString);
 			/* S : 이전 선택 환경 복구 */
 			selectedIdx = '${param.currentIdx}'.split(":");
 
 			menuClick(selectedIdx[0]);
 			if(selectedIdx[0] <= 1){
-				subMenuClick(selectedIdx[1], selectedIdx[2]);
+				if(selectedIdx[1]!=6) subMenuClick(selectedIdx[1], selectedIdx[2]);
+				else makeItemButton(selectedIdx[1], 5);
 			}
 			
 			menuCtl();
@@ -118,11 +117,16 @@
 		function serverCall() {
 			const jobIndex = arguments[0];
 			const formChild = arguments[1];
-			/* 상품관리로 수정*/
-			const recordIdx = (selectedIdx[1] < 5)? parseInt(selectedIdx[1]): (selectedIdx[1] == 5)? parseInt(selectedIdx[1]) + parseInt(selectedIdx[3]) : parseInt(selectedIdx[1]) + 6; 
+			let recordIdx;
+			if(selectedIdx[3] != null) recordIdx = parseInt(selectedIdx[1]) + parseInt(selectedIdx[3]);
+			else recordIdx = arguments[2];
 			
-			const form = createForm("", itemCode[recordIdx][jobIndex][0], "post");
+			console.log("recordIdx : "+recordIdx);
+			console.log("jobIndex : "+jobIndex);
 			
+			const form = createForm("f", itemCode[recordIdx][jobIndex][0], "post");
+			//form.setAttribute("onSubmit", "return refreshingDefender()");
+			//form.addEventListener("submit", refreshingDefender);
 			
 			formChild.forEach(function(child){
 				form.appendChild(child);
@@ -176,7 +180,6 @@
 			if(arguments.length > 0) {
 				selectedIdxChange(0, arguments[0]);
 			}
-			
 			const idx = parseInt(selectedIdx[0]);
 			/* 선택 메뉴의 Style 지정*/
 			if (idx < 3)
@@ -194,22 +197,19 @@
 
 		function subMenuClick() {
 			if(arguments.length > 0){
-				if(parseInt(selectedIdx[1]) != parseInt(arguments[0])) jsonString = '';
-				selectedIdxChange(1, arguments[0]);
-				selectedIdxChange(2, arguments[1]);	
+				selectedIdxChange(1, arguments[0]); //5 : 분류관리, 6 : 상품관리
+				selectedIdxChange(2, arguments[1]);	//storeCode
 			}
 			
-			
-			const subMenuIdx = parseInt(selectedIdx[1]);
-			const itemCodeIdx = subMenuIdx + ((subMenuIdx > 5)? 6 : 0);
+			let subMenuIdx = parseInt(selectedIdx[1]);
 			let objIdx = null;
 			
 			const mainTitle = document.getElementById("selectedMenu");
-			mainTitle.innerText = itemCode[itemCodeIdx][2];		
+			mainTitle.innerText = itemCode[subMenuIdx][2];		
 			
 			if(selectedIdx[0] == 0){/* DatePicker 상태변경을 위한 objIdx 설정 */
 							
-			}else if(selectedIdx[1] == 5 && selectedIdx.length == 4){
+			}else if(selectedIdx[0] == 1 && selectedIdx.length == 4){
 				objIdx = parseInt(selectedIdx[3]);
 			}
 			
@@ -218,8 +218,11 @@
 			else if(subMenuIdx == 5) {
 				makeItemButton(subMenuIdx, 7);
 				if(objIdx != null)	modifyButtonStatus(objIdx);
-			}else if(subMenuIdx == 6 || subMenuIdx == 7){
-				if(jsonString == '') menuCtl();
+			}else if(subMenuIdx == 6){
+				//menuCtl();
+				const formChild = [createInputBox("hidden", "storeCode", selectedIdx[2], "")];
+				serverCall(3,formChild,12);
+				if(objIdx != null) modifyButtonStatus(objIdx);
 			}
 		}
 		
@@ -237,12 +240,30 @@
 		function makeItemButton(sIdx, length) {
 			if (content.innerText == "") {
 				const div = createDIV("itemList", "itemZone", "");
-				for (idx=0; idx<length; idx++) {
-					const button = createDIV("", "item", "modifyButtonStatus(" + idx + ");menuCtl("+ idx +");");
-					button.innerText = itemCode[sIdx+idx][1];
-					div.appendChild(button);
+				if(sIdx == 5){
+					for (idx=0; idx<length; idx++) {
+						const button = createDIV("", "item", "modifyButtonStatus(" + idx + ");menuCtl("+ idx +");");
+						button.innerText = itemCode[sIdx+idx][1];
+						div.appendChild(button);
+					}
+					content.appendChild(div);
+				}else if(sIdx == 6){
+					const input = createInputBox("text","",'${menuCode}',"상품코드");
+					input.readOnly = true;
+					div.appendChild(input);
+					div.appendChild(createInputBox("text","","","상품이름"));
+					div.appendChild(document.createElement('select'));
+					div.appendChild(document.createElement('select'));
+					div.appendChild(createInputBox("color","","#ff0000",""));
+					div.appendChild(createInputBox("file","","파일선택","파일선택"));
+					div.appendChild(createInputBox("button","","상품등록","상품등록"));
+					content.appendChild(div);
+					document.getElementById("itemList").children[2].innerHTML = '${categoryCode}';
+					document.getElementById("itemList").children[3].innerHTML = '${stateCode}';
+					console.log('${serverData}');
+					console.log('${categoryData}');
+					console.log('${menuCode}');
 				}
-				content.appendChild(div);
 			}
 		}
 		/* Item Button에 Click event 발생시 Item Button에 CSS적용 */
@@ -277,13 +298,15 @@
 														createInputBox("hidden", "storeCode", selectedIdx[2], "")]
 				
 				serverCall(3, formChild);
+				alert("300");
 			}else{
 				salesAnalysisCallback();
 			}
 		}
-		/* 상품 분류코드 관리 */
+		/* 상품관리 */
 		function goodsManagementCtl(){
 			let isServerCall = false;
+			
 			if(arguments[0] != null){ 
 				isServerCall = true;
 				if(selectedIdx[3] != arguments[0]) selectedIdxChange(3, arguments[0]);
@@ -299,151 +322,23 @@
 														createInputBox("hidden", "levCode", itemCode[jobIdx][0], "")];
 														
 				serverCall(3, formChild);
+				alert("324");
+			}else if(selectedIdx[1]==6){
+				menuManagementCallBack();
 			}else{
-				if(parseInt(selectedIdx[1]) == 6) goodsRegistration();
-				else if(parseInt(selectedIdx[1]) == 7) goodsCostPriceRegistration();
-				else categoryManagementCallBack();
+				categoryManagementCallBack();
 			}
 		}
-		/* 상품등록관리 */
-		function goodsRegistration(){
-			//alert("GoodsReg");
-			let jsonData = null;
-			if(jsonString != '') {
-				jsonData = JSON.parse(jsonString);
-			}
-			if(jsonData == null){
-				const formChild = [ createInputBox("hidden", "storeCode", selectedIdx[2], "")];
-				serverCall(3, formChild);
-			}else{
-				/* 상품등록을 위한 HTML Object 생성해 화면에 배치하기*/
-				const jsonData = JSON.parse(jsonString);
-				const itemList = createDIV("itemList", "itemZone", "");
-				
-				// 상품코드 생성
-				let goodsCode = '000';
-				if(jsonData.goodsList != null){
-					for(idx=0; idx<jsonData.goodsList.length; idx++){
-						if(idx == 0) {goodsCode = jsonData.goodsList[idx].goodsCode;}
-						else {
-							if(parseInt(goodsCode) < parseInt(jsonData.goodsList[idx].goodsCode)){
-								goodsCode = jsonData.goodsList[idx].goodsCode;
-							}
-						}
-					}
-				}
-				/* 상품코드 표시 Object */
-				const gcBox = createInputBox("text", "goodsCode", goodsCode, "");
-				gcBox.setAttribute("readOnly", true);
-				gcBox.setAttribute("class", "item");
-				itemList.appendChild(gcBox);
-				
-				/* 상품이름 입력 Object */
-				const gnBox = createInputBox("text", "goodsName", "", "상품이름");
-				gnBox.setAttribute("class", "item");
-				/* 상품분류코드 선택, 상품상태코드 선택 Object */
-				let categoryOptions = [];
-				let stateOptions = [];
-				(jsonData.cateList).forEach(function(item){
-					if(item.levCode.substr(0, 1) == 'C') categoryOptions.push(item);
-					if(item.levCode.substr(0, 1) == 'S') stateOptions.push(item);
-				});
-				itemList.appendChild(createSelect("goodsCategoryCode", categoryOptions, "item"));
-				itemList.appendChild(createSelect("goodsStateCode", stateOptions, "item"));
-				/* 상품컬러 선택 */
-				itemList.appendChild(createInputBox("hidden", "goodsColorCode", "#e50bd3", ""));
-				const gnColor = createInputBox("color", "", "#e50bd3", "");
-				gnColor.setAttribute("class", "item");
-				gnColor.addEventListener("change", colorPickerChange, false);
-				itemList.appendChild(gnColor);
-				/* 상품이미지 선택 */
-				const gnImage = createInputBox("file", "goodsImageCode", "", "");
-				
-				gnImage.setAttribute("class", "item");
-				itemList.appendChild(gnImage);
-				/* 상품 등록 버튼 생성 */
-				itemList.appendChild(createDiv("", "item", "alert(document.getElementsByName('goodsColorCode')[0].value)", "상품등록"));
-				
-				content.appendChild(itemList);
-				
-				/* 상품검색 및 리스트 출력 영역 */
-				const goodsZone = createDIV("goodsZone", "", "");
-				goodsZone.appendChild(makeSearchBox());
-				goodsZone.appendChild(makeGoodsList());
-
-				content.appendChild(goodsZone);				
-			}		
-		}
-		
-
-		function colorPickerChange(event) {
-			document.getElementsByName("goodsColorCode")[0].value = event.target.value;
-		}
-		/* 상품가격관리 */
-		function goodsCostPriceRegistration(){
-			content.appendChild(createDIV("itemList", "itemZone", ""));
-		}
-		
-		/* 상품관리 & 가격관리 :: 검색 창 생성 */
-		function makeSearchBox(){
-			const recordIdx = parseInt(selectedIdx[1]);
-			const searchZone = createDIV("goodsSearch", "goodsZone search", "");
-			const input = createInputBox("text", itemCode[recordIdx][4][1], "",
-					"상품코드 또는 상품 이름");
-			input.setAttribute("class", "box big");
-			
-			const divBtn = createDIV("", "addBtn", "searchGoods()");
-			divBtn.innerText = "SEARCH";
-						
-			searchZone.appendChild(input);
-			searchZone.appendChild(divBtn);
-			return searchZone;
-		}
-		
-		/* 상품리스트 영역 생성 */
-		function makeGoodsList(){
-			if(jsonString != '') {
-				jsonData = JSON.parse(jsonString);
-			}
-			const goodsListZone = createDIV("goodsListZone", "goodsZone list","");
-			const title = createDIV("", "record title", "");
-			title.appendChild(createDiv("", "goodsCol title", "", "상품코드"));
-			title.appendChild(createDiv("", "goodsCol title", "", "상품이름"));
-			title.appendChild(createDiv("", "goodsCol title", "", "상품분류"));
-			title.appendChild(createDiv("", "goodsCol title", "", "상품상태"));
-			title.appendChild(createDiv("", "goodsCol title", "", "상품색상"));
-			title.appendChild(createDiv("", "goodsCol title", "", "상품사진"));
-			goodsListZone.appendChild(title);
-
-			if(jsonData.goodsList != null){
-					jsonData.goodsList.forEach(function(item){
-					const record = createDIV("", "record content", "showUpdateBox();");
-					record.appendChild(createDiv("", "goodsCol content", "", item.goodsCode));
-					record.appendChild(createDiv("", "goodsCol content", "", item.goodsName));
-					record.appendChild(createDiv("", "goodsCol content", "", item.goodsCategoryCode));
-					record.appendChild(createDiv("", "goodsCol content", "", item.goodsStateCode));
-					record.appendChild(createDiv("", "goodsCol content", "", item.goodsColorCode));
-					record.appendChild(createDiv("", "goodsCol content", "", item.goodsImageCode));
-					goodsListZone.appendChild(record);
-				});
-			}else{
-				const record = createDiv("", "record content",
-						"", "No Record");
-				record.style.textAlign = "center";
-				goodsListZone.appendChild(record);
-			}
-			
-			return goodsListZone;
-		}
-		
 		/* 매장관리 */
 		function storeManagementCtl(){
 			alert(arguments.length);
 			if(arguments.length == 0) {
 				const jobIdx = parseInt(selectedIdx[1]) + 6;  				
-				const formChild = [ createInputBox("hidden", "storeCode", selectedIdx[2], "")];
+				const formChild = [ createInputBox("hidden", "currentIdx",	makeCurrentIdx(), ""), 
+														createInputBox("hidden", "storeCode", selectedIdx[2], "")];
 				
 				serverCall(3, formChild);
+				alert("340");
 			}else {
 				storeManagementCallBack();
 			}
@@ -469,6 +364,7 @@
 														createInputBox("hidden", "storeCode", selectedIdx[2], "")];
 				
 				serverCall(jobIdx, formChild);
+				alert("366");
 			}else {
 				customerManagementCallBack();
 			}
@@ -534,6 +430,12 @@
 			categoryZone.appendChild(categoryList);
 			content.appendChild(categoryZone);
 		}
+		
+		/* 상품관리 CallBack */
+		function menuManagementCallBack(){
+			alert("상품관리 콜백");
+			console.log('${serverData}');
+		}
 
 		/* 매장관리 CallBack */
 		function storeManagementCallBack(){
@@ -569,6 +471,7 @@
 				formChild.push(createInputBox("hidden", itemCode[recordIdx][4][1], userInput.value, ""));
 				
 				serverCall(4, formChild);
+				alert("472");
 			} else {
 				userInput.setAttribute("placeholder", "2~20자 이내로 입력하세요");
 			}
@@ -627,6 +530,7 @@
 			
 			//console.log(formChild);
 			serverCall(5, formChild);
+			alert("532");
 		}
 		
 		function goToSales() {

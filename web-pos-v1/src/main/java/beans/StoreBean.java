@@ -12,7 +12,14 @@ public class StoreBean {
 	private String storeImageCode;
 	private ArrayList<CategoriesBean> cateList;
 	private ArrayList<EmployeesBean> empList;
+	private ArrayList<GoodsBean> goodsList;
 	
+	public ArrayList<GoodsBean> getGoodsList() {
+		return goodsList;
+	}
+	public void setGoodsList(ArrayList<GoodsBean> goodsList) {
+		this.goodsList = goodsList;
+	}
 	public ArrayList<EmployeesBean> getEmpList() {
 		return empList;
 	}
