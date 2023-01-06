@@ -1,0 +1,73 @@
+/* JDBC ResultSet Important Method */
+ - .isFirst()
+ - .isLast()
+ - .isBeforeFirst()
+ - .isAfterLast()
+ *** 아래의 메서드 운용시 필수 셋팅 ***************************************
+ * prepareStatement(query, resultSet.Type, resultSet.Concurrency)
+ * ResultSet.TYPE_SCROLL_INSENSITIVE
+ * ResultSet.CONCUR_UPDATABLE
+ *
+ * Default Value
+ *  - ResultSet.TYPE_FORWARD_ONLY
+ *  - ResultSet.CONCUR_READ_ONLY 
+ ******************************************************************
+ - .first()
+ - .last()
+ - .next()
+ - .previous()
+ - .getRow()
+ - .beforeFirst()
+ - .afterLast()
+ 
+ 
+ ******************************************************************
+ 	        		                              		   
+  [Example Code] -------------------------------------------------------
+  <!-- sample -->
+  <div name="communicationBox" class="tripple">
+  	<div id="inputZone">
+  	  사업자정보
+  		<input type="text" name="storeCode" placeholder="사업자 등록 번호" class="box big" />
+  		<input type="text" name="storeName" placeholder="상점 상호"  class="box big" />
+  		<input type="text" name="storePhone" placeholder="대표 연락처"  class="box big" />
+  	</div>
+  </div>
+  ---------------------------------------------------------[Example Code]
+ *	DOM을 활용한 node와 element 탐색
+ 		- node : documentNode, elementNode, attributeNode, textNode, commentNode
+ 		    - property : nodeName, nodeValue, 
+ 		    					   nodeType >> e:1  a:2 t:3 c:8 d:9
+    - 특정 요소 탐색
+ 		   document.getElementById("id");
+ 		   document.getElementsByName("name"); >> js: array
+ 		   document.getElementsByClass("className"); >> js: array
+ 		   
+ 		   document.querySelector("selector"); >> 해당 selector값을 갖는 첫 요소 탐색
+ 		     :: ex :: document.querySelector(
+ 		                    "div#inputZone > input[name=storeCode]"); 
+ 		   document.querySelectorAll("selector") >> 해당 selector값을 갖는 모든 요소 탐색
+         :: ex :: const tripple =document.querySelector(".tripple");
+          		    tripple.querySelectorAll("div#inputZone > input");
+          		    
+ * 특정 요소의 노드 탐색
+    - parentNode >> node
+    - childNodes >> nodeList
+      - firstChild >> first Child Node
+      - lastChild  >> last Child Node
+      - length		 >> 자식노드의 길이
+    - sibling    
+      - previousSibling >> Older Brother Node
+      - nextSibling			>> Younger Brother Node
+ 
+ * 특정 요소의 Element 탐색
+    - parentElement 				>> HTML Element
+    - children 		  			 	>> HTML Collection
+      - firstElementChild  	>> first Child HTML Element
+      - lastElementChild   	>> last Child HTML Element 
+    - sibling    
+      - previousElementSibling 	>> Older Brother HTML Element
+      - nextElementSibling			>> Younger Brother HTML Element 
+ ******************************************************************
+  
+ 
