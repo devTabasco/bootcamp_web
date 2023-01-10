@@ -11,5 +11,5 @@ public class GroupBean {
 	private String groupCode;
 	private String groupCeo;
 	private String groupPin;
-//	private ArrayList<StoreBean> storeInfoList;
+	private ArrayList<StoreBean> storeInfoList;
 }

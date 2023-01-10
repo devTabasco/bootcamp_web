@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import icia.js.changyong.mapper.MapperInter;
+import icia.js.changyong.mapper.AuthMapperInter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class DbcpTest {
 	@Setter(onMethod_ = @Autowired)
 	private SqlSessionTemplate sqlSession;
 	@Setter(onMethod_ = @Autowired)
-	private MapperInter mapper;
+	private AuthMapperInter mapper;
 	
 	@Test
 	public void testConnection() {
@@ -36,8 +36,8 @@ public class DbcpTest {
 //			log.info(connect);
 //			log.info(sessionFactory);
 //			log.info(sqlSession);
-			log.info(mapper.getDate());
-			log.info(mapper.getDate2());
+//			log.info(mapper.getDate());
+//			log.info(mapper.getDate2());
 		}catch(Exception e) {e.printStackTrace();}
 	}
 }

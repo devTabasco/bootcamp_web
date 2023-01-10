@@ -41,5 +41,5 @@
 		<property name="dataSource" ref="gosiHikariDataSource"/>
 	</bean>
 	<tx:annotation-driven/> <!-- annotation으로 transaction에 접근할 수 있는 driven -->
-	<mybatis-spring:scan base-package="icia.js.changyong.mapper"/> <!-- myBatis annotaion을 scan할 수 있도록 -->
+	<mybatis-spring:scan base-package="icia.js.changyong.mapper"/> <!-- myBatis annotaion을 scan할 수 있도록 // mapper file 스캔 -->
 </beans>

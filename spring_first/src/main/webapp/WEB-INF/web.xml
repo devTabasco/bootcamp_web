@@ -23,6 +23,11 @@
 			<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
+		<!-- 파일 업로드를 위한 환경설정 -->
+		<multipart-config>
+			<max-file-size>5242880</max-file-size>
+			<max-request-size>20971520</max-request-size>
+		</multipart-config>
 	</servlet>
 		
 	<servlet-mapping>

@@ -52,12 +52,14 @@ function messageController(turn, messageString){
 	
 	for(let recordIdx=0; recordIdx<dataLength.length; recordIdx++){
 		if(obj.getAttribute("name") == dataLength[recordIdx][0]){
+			console.log(obj.value);
 			if(obj.value.length >= dataLength[recordIdx][1] 
 				&& obj.value.length <= dataLength[recordIdx][2]
-				&& isNaN(obj.value.substr(0,1))) {result = true;}
+				) {result = true;}
+				//&& isNaN(obj.value.substr(0,1))
 		} 	
 	}
-
+	console.log(result);
 	return result;
 }
 
