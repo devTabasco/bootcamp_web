@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="icia.js.hoonzzang.mapper.MapperInter">
+	<!-- SELECT -->
+  	<select id="isGroupName" parameterType="icia.js.hoonzzang.beans.GroupBean" resultType="int">
+  		SELECT COUNT(*) FROM DUPGROUPNAME WHERE GROUPNAME = #{groupName}
+  	</select>
+  	
+  	<select id="getGroupCode" parameterType="icia.js.hoonzzang.beans.GroupBean" resultType="string">
+  		SELECT SG_CODE AS GROUPCODE FROM SG WHERE SG_NAME = #{groupName}
+  	</select>
+  	
+  	<!-- INSERT -->
+  	<insert id = "insTemp" parameterType="icia.js.hoonzzang.beans.GroupBean" >
+  		INSERT INTO TEMP(TEMP_GROUPNAME) VALUES (#{groupName})
+  	</insert>
+  	
+  	<insert id = "insStoreGroup" parameterType="icia.js.hoonzzang.beans.GroupBean" >
+  		INSERT INTO SG(SG_CODE, SG_NAME, SG_CEO, SG_PIN) VALUES('S'||GROUPCODE.NEXTVAL, #{groupName}, #{groupCeo}, #{groupPin})
+  	</insert>
+  	
+  	<insert id = "insStore" parameterType="icia.js.hoonzzang.beans.GroupBean" >
+  		INSERT INTO ST(ST_CODE, ST_NAME, ST_ZIPCODE, ST_ADDR, ST_ADDRDETAIL, ST_PHONE, ST_SGCODE) VALUES(#{storeInfoList[0].storeCode}, #{storeInfoList[0].storeName}, #{storeInfoList[0].storeZip}, #{storeInfoList[0].storeAddr}, #{storeInfoList[0].storeAddrDetail}, #{storeInfoList[0].storePhone}, #{groupCode})
+  	</insert>
+  	
+  	<insert id = "insInitCategory" parameterType="icia.js.hoonzzang.beans.GroupBean" >
+  		INSERT INTO SC(SC_STCODE, SC_CODE, SC_NAME) VALUES(#{storeInfoList[0].storeCode}, #{storeInfoList[0].cateList[0].levCode}, #{storeInfoList[0].cateList[0].levName})
+  	</insert>
+  	
+  	<insert id = "insInitEmp" parameterType="icia.js.hoonzzang.beans.GroupBean" >
+  		INSERT INTO SE(SE_STCODE, SE_CODE, SE_SCLEV, SE_NAME, SE_PIN, SE_SICODE) VALUES(#{storeInfoList[0].storeCode}, 'E'||LPAD(EMPCODE.NEXTVAL, 2, '0'), #{storeInfoList[0].cateList[0].levCode}, #{groupCeo}, #{groupPin}, DEFAULT)
+  	</insert>
+  	
+  	<!-- DELETE -->
+  	<delete id = "delTemp" parameterType="icia.js.hoonzzang.beans.GroupBean">
+  		DELETE TEMP WHERE TEMP_GROUPNAME = #{groupName}
+  	</delete>
+</mapper>
