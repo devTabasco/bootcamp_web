@@ -50,11 +50,4 @@ public class APIController {
 		return (GroupBean)model.getAttribute("group");
 	}
 	
-	@PostMapping("/PageReturn")
-	public ModelAndView pageReturn() {
-		ModelAndView mav = new ModelAndView();
-		mav.setViewName("redirect:/");
-		log.info("성공?");
-		return mav;
-	}
 }

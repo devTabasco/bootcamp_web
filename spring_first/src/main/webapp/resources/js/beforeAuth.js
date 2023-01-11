@@ -177,8 +177,8 @@ function moveJoinStep3(jsonData){
 
 function moveJoinStep4(jsonData){
 	console.log(jsonData);
-	formData = new FormData();
-	serverCallByFetchAjax(formData, 'PageReturn', 'post', 'moveJoinStep5'); 
+	serverCallByRequest("Index", "get", "");
+	console.log("성공!");
 	//const box = document.getElementsByClassName('communicationBox tripple')[0];
 	//if(jsonData.message == null){
 		//box.children[2].style.display = 'block';

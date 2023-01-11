@@ -108,6 +108,8 @@ public class Authentication {
 				this.session.insert("insInitCategory", group);
 				System.out.println("카테고리 등록 성공!");
 			}
+			group.getStoreInfoList().get(0).getCateList().get(0).setLevCode("L1");
+			group.getStoreInfoList().get(0).getCateList().get(0).setLevName("그룹대표");
 			if (this.convertToBoolean(this.session.insert("insInitEmp", group))) {
 				System.out.println("직원 등록 성공!");
 			}
