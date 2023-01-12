@@ -41,6 +41,7 @@ function messageController(turn, messageString){
 		title.innerText = "";
 		content.innerText = "";
 		background.style.display = "none";
+		if(messageString != '') window[messageString]('Index','get','');
 	}
 }
 

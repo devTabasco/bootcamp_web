@@ -28,6 +28,9 @@ public class Authentication {
 		case 2:
 			this.initInsertCtl(model);
 			break;
+		case 3:
+			this.deleteTempCtl(model);
+			break;
 		default:
 			break;
 		}
@@ -79,7 +82,7 @@ public class Authentication {
 			// 2. [DEL] TEMP
 			if (this.convertToBoolean(this.session.delete("delTemp", group))) {
 				// 3. [SEL] GROUPCODE
-				group.setGroupCode(this.session.selectOne("getGroupCode", group));
+//				group.setGroupCode(this.session.selectOne("getGroupCode", group));
 			}
 			System.out.println(group.getGroupCode());
 		} else {
@@ -111,6 +114,18 @@ public class Authentication {
 		} else {
 			// insert 안됨.
 			group.setMessage("네트워크 오류: 네트워크 오류");
+		}
+	}
+	
+	private void deleteTempCtl(Model model) {
+		GroupBean group = (GroupBean) model.getAttribute("group");
+//		log.info("{}",((GroupBean)model.getAttribute("group")).getGroupName());
+		// 중복검사 (SG + TEMP)
+		log.info("{}",group);
+
+		if (this.convertToBoolean(this.session.delete("delTemp", group))) {
+			group.setMessage("그룹명 삭제: 입력했던 그룹명이 삭제되었습니다. 다시 입력해주세요.");
+			System.out.println("TEMP 삭제 성공!");
 		}
 	}
 

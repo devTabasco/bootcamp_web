@@ -20,7 +20,7 @@ public class MainController {
 	public String joinStep() {
 		log.info("----- join Form 진입 -----");
 //		return "joinForm";
-		return "joinForm_json";
+		return "joinForm_json_230112";
 	}
 	
 }

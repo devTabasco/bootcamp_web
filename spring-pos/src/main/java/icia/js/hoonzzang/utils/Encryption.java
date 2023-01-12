@@ -22,11 +22,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /* 필수 라이브러리
- *  spring-security-crypto
- *  commons-codec
+ *  spring-security-crypto 5.3.10
+ *  commons-codec 1.15
  */
 
-@Component
+@Component //bean으로 등록
 public class Encryption implements PasswordEncoder{
 	// Spring Security가 기본적을 제공하는 암호화 기법 : SHA 기반
 	private PasswordEncoder passwordEncoder;
@@ -39,7 +39,8 @@ public class Encryption implements PasswordEncoder{
 		this.passwordEncoder = passwordEncoder;
 	}
 
-	/* Spring Security가 제공하는 SHA기반의 암호화 호출 메서드
+	/* Spring Security가 제공하는 SHA(shadow : 복호화 불가)기반의 암호화 호출 메서드
+	 * key값을 노출하지 않아, 암호화 방식을 알 수 없음.
 	 * originPassword : Encryption이 적용되지 않은 암호
 	 */
 	@Override
@@ -47,6 +48,7 @@ public class Encryption implements PasswordEncoder{
 		return passwordEncoder.encode(originPassword);
 	}
 
+	//암호화 알고리즘 상 암호화 시 문자가 계속 달라지므로 무조건 DB에서 암호를 가져와서 matchs로 비교해야한다.
 	@Override
 	public boolean matches(CharSequence originPassword, String encodedPassword) {
 		return passwordEncoder.matches(originPassword, encodedPassword);
@@ -62,6 +64,9 @@ public class Encryption implements PasswordEncoder{
 	 * @return String 암호화된 DATA
 	 * @exception Exception
 	 */
+	
+	//대칭키(비밀키)
+	//비대칭키(공개키) - 인증서 방식 : 암호화 방식을 2가지(공개키와 비밀키로 가지고 있는 방식) 
 	public String TripleDesEncoding(String data, String hint) throws Exception {
 		if (data == null || data.length() == 0) {	return "";}
 
