@@ -3,16 +3,19 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import icia.js.hoonzzang.beans.GroupBean;
 import icia.js.hoonzzang.beans.StoreBean;
 import icia.js.hoonzzang.services.auth.Authentication;
 import icia.js.hoonzzang.services.auth.Authentication_json;
 import lombok.extern.slf4j.Slf4j;
+import icia.js.hoonzzang.utils.ProjectUtils;
 
 @RestController
 @Slf4j
@@ -80,5 +83,6 @@ public class APIController {
 		log.info("{}", (GroupBean)model.getAttribute("group"));
 		return (GroupBean)model.getAttribute("group");
 	}
+	
 	
 }

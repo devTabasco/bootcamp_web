@@ -51,6 +51,14 @@
 		SELECT COUNT(*) FROM ST WHERE ST_CODE = #{storeInfoList[0].storeCode}
 	</select>
 	
+	<select id="isEmpCode" parameterType="icia.js.hoonzzang.beans.GroupBean" resultType="int" >
+		SELECT COUNT(*) FROM SE WHERE SE_STCODE = #{storeInfoList[0].storeCode} AND SE_CODE = #{storeInfoList[0].empList[0].empCode}
+	</select>
+	
+	<select id="getEmpPinCode" parameterType="icia.js.hoonzzang.beans.GroupBean" resultType="string" >
+		SELECT SE_PIN FROM SE WHERE (SE_STCODE = #{storeInfoList[0].storeCode} AND SE_CODE = #{storeInfoList[0].empList[0].empCode}) AND SE_PIN = #{storeInfoList[0].empList[0].empPin}
+	</select>
+	
 	<insert id="insGroup" parameterType="icia.js.hoonzzang.beans.GroupBean" 
 					useGeneratedKeys="true" keyProperty="groupCode" keyColumn="SG_CODE">
 		INSERT INTO SG(SG_CODE, SG_NAME, SG_CEO, SG_PIN) 
@@ -79,6 +87,12 @@
 	<insert id="insTemp" parameterType="icia.js.hoonzzang.beans.GroupBean">
 		INSERT INTO TEMP(TEMP_GROUPNAME) VALUES(#{groupName})
 	</insert>
+	
+	<insert id="insAccessLog" parameterType="icia.js.hoonzzang.beans.GroupBean"
+	useGeneratedKeys="true" keyProperty="storeInfoList[0].empList[0].accessList[0].accessDate" keyColumn="AL_DATE">
+		INSERT INTO AL(AL_SESTCODE, AL_SECODE, AL_DATE, AL_IP, AL_TYPE, AL_PUBLICIP, AL_BROWSER, AL_STATE) VALUES(#{storeInfoList[0].storeCode}, #{storeInfoList[0].empList[0].empCode}, DEFAULT, #{storeInfoList[0].empList[0].accessList[0].accessLocation}, #{storeInfoList[0].empList[0].accessList[0].accessType}, #{storeInfoList[0].empList[0].accessList[0].accessPublicIp}, #{storeInfoList[0].empList[0].accessList[0].accessBrowser}, #{storeInfoList[0].empList[0].accessList[0].accessState})
+	</insert>
+	
 	<delete id="delTemp" parameterType="icia.js.hoonzzang.beans.GroupBean">
 		DELETE FROM TEMP WHERE TEMP_GROUPNAME = #{groupName}
 	</delete>

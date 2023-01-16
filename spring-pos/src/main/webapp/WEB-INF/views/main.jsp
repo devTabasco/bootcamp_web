@@ -11,23 +11,15 @@
 <link rel="stylesheet" href="resources/css/main.css" />
 </head>
 <body onLoad="pageInit('${param.message}', '')">
-	<div id="header">
+<div id="header">
 		<div id="logo">훈</div>
 		<div id="project">HoonZzang's Lecture Notes</div>
 		<div id="currentPage"><span>[ Main ]</span></div>
 	</div>
-	<div id="content"></div>
+	<div id="content">${AccessInfo}</div>
 	<div id="footer">
-		<div class="btn double on" onClick="access()">매장입장</div>
-		<div class="btn double off" onClick="serverCallByRequest('JoinStep', 'get', '')">회원가입</div>
-	</div>
-	<!-- 로그인 Box -->
-	<div class="communicationBox tripple">
-		<div class="inputZone">
-			<input type="text" name="storeCode" placeholder="매장코드" class="box big" />
-			<input type="text" name="empCode" placeholder="직원코드"  class="box big" />
-			<input type="password" name="empPin" placeholder="핀번호"  class="box big" />
-		</div>
+		<div class="btn double on" onClick="serverCallByRequest('goMgr', 'get', '')">매장관리</div>
+		<div class="btn double on" onClick="serverCallByRequest('goSales', 'get', '')">판매</div>
 	</div>
 	<!-- MessageBox -->
 	<div id="background" style="display: none">
@@ -43,7 +35,3 @@
 	</div>
 </body>
 </html>
-
-
-
-

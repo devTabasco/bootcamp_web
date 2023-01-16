@@ -9,19 +9,23 @@ import java.util.ArrayList;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.ModelAndView;
 
+import ch.qos.logback.core.joran.conditional.IfAction;
 import icia.js.hoonzzang.beans.EmployeesBean;
+import icia.js.hoonzzang.SimpleTransactionManager;
 import icia.js.hoonzzang.beans.CategoriesBean;
 import icia.js.hoonzzang.beans.GroupBean;
 import icia.js.hoonzzang.beans.StoreBean;
-import icia.js.hoonzzang.utils.Encryption;
+import icia.js.hoonzzang.utils.*;
 import lombok.extern.slf4j.Slf4j;
 
 /* Authentication + Memeber Join*/
@@ -32,6 +36,9 @@ public class Authentication_json {
 	private Encryption enc;
 	@Autowired
 	private SqlSessionTemplate session;
+	@Autowired
+	private ProjectUtils utils;
+	private SimpleTransactionManager tranManager;
 
 	public Authentication_json() {
 
@@ -54,12 +61,49 @@ public class Authentication_json {
 		}
 	}
 
+	/* View 방식의 요청 컨트롤러 */
 	public void backController(int serviceCode, ModelAndView mav) {
 		switch (serviceCode) {
 		case 1:
-
+			this.systemAccessCtl(mav);
+			//로그인 처리
 			break;
 		}
+	}
+	
+	private void systemAccessCtl(ModelAndView mav) {
+		//key 값을 주지 않으면, Class 이름으로 접근할 수 있다.
+		GroupBean group = (GroupBean)mav.getModel().get("group");
+		String page = "index"; 
+		
+		if(this.convertToBoolean(this.session.selectOne("isStoreCode",group))) {
+			if(convertToBoolean(this.session.selectOne("isEmpCode",group))) {
+				if(enc.matches(group.getStoreInfoList().get(0).getEmpList().get(0).getEmpPin(), this.session.selectOne("getEmpPinCode",group)));
+				System.out.println("matches성공!");
+				
+				try {
+					if(utils.getAttribute("AccessInfo") == null) {
+						group.getStoreInfoList().get(0).getEmpList().get(0).getAccessList().get(0).setAccessLocation(utils.getHeaderInfo(true));
+						group.getStoreInfoList().get(0).getEmpList().get(0).getAccessList().get(0).setAccessBrowser(ClientInfo.getBrowserInfo(utils.getHeaderInfo(false)));;
+						group.getStoreInfoList().get(0).getEmpList().get(0).getAccessList().get(0).setAccessType(1);
+						group.getStoreInfoList().get(0).getEmpList().get(0).getAccessList().get(0).setAccessState("R");
+						this.session.insert("insAccessLog",group);
+						utils.setAttribute("AccessInfo",group);
+						System.out.println("insert 성공!");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}finally {
+					page = "main";
+					mav.setViewName("main");					
+				}
+				
+				log.info("{}",group.getStoreInfoList().get(0).getEmpList().get(0).getAccessList());
+				
+			}
+		}
+		
+		
 	}
 
 	/* Registration */
@@ -86,6 +130,26 @@ public class Authentication_json {
 		this.session.insert("insStore", group);
 		this.session.update("insCate", group);
 		this.session.insert("insEmp", group);
+		
+//		try {
+//			this.tranManager = getTransaction(false);
+//			this.tranManager.tranStart();
+//			
+//			if(this.convertToBoolean(this.sqlSession.insert("insGroup", group))){
+//				//group.getStoreInfoList().get(0).setStoreCode("1234567890");
+//				if(this.convertToBoolean(this.sqlSession.insert("insStore", group))) {
+//					if(this.convertToBoolean(this.sqlSession.insert("insCate", group))){
+//						if(this.convertToBoolean(this.sqlSession.insert("insEmp", group))) {
+//							this.tranManager.commit();
+//						}else {group.setMessage(message);}
+//					}else {group.setMessage(message);}
+//				}else {group.setMessage(message);}
+//			}else {group.setMessage(message);}
+//		}catch(Exception e) {this.tranManager.rollback();
+//		}finally {
+//			this.tranManager.tranEnd();
+//			this.deleteTempGroupName(model, true);
+//		}
 		
 		/* AES 복호화 */
 		String decString = null;

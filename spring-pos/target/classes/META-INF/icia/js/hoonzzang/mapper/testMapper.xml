@@ -2,7 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="icia.js.hoonzzang.mapper.MapperInter">
-	<!-- SELECT -->
+<!-- 
+	 SELECT 
   	<select id="isGroupName" parameterType="icia.js.hoonzzang.beans.GroupBean" resultType="int">
   		SELECT COUNT(*) FROM DUPGROUPNAME WHERE GROUPNAME = #{groupName}
   	</select>
@@ -11,12 +12,14 @@
   		SELECT SG_CODE AS GROUPCODE FROM SG WHERE SG_NAME = #{groupName}
   	</select>
   	
-  	<!-- INSERT -->
+  	 INSERT 
   	<insert id = "insTemp" parameterType="icia.js.hoonzzang.beans.GroupBean" >
   		INSERT INTO TEMP(TEMP_GROUPNAME) VALUES (#{groupName})
   	</insert>
   	
-  	<insert id = "insStoreGroup" parameterType="icia.js.hoonzzang.beans.GroupBean" >
+  	<insert id = "insStoreGroup" parameterType = "icia.js.hoonzzang.beans.GroupBean" useGeneratedKeys="true" keyProperty="groupCode" keyColumn="SG_CODE" >
+  	
+  	 useGeneratedKeys="true" keyProperty="groupCode" keyColumn="SG_CODE" 
   		INSERT INTO SG(SG_CODE, SG_NAME, SG_CEO, SG_PIN) VALUES('S'||GROUPCODE.NEXTVAL, #{groupName}, #{groupCeo}, #{groupPin})
   	</insert>
   	
@@ -31,9 +34,67 @@
   	<insert id = "insInitEmp" parameterType="icia.js.hoonzzang.beans.GroupBean" >
   		INSERT INTO SE(SE_STCODE, SE_CODE, SE_SCLEV, SE_NAME, SE_PIN, SE_SICODE) VALUES(#{storeInfoList[0].storeCode}, 'E'||LPAD(EMPCODE.NEXTVAL, 2, '0'), #{storeInfoList[0].cateList[0].levCode}, #{groupCeo}, #{groupPin}, DEFAULT)
   	</insert>
-  	
-  	<!-- DELETE -->
+
+  	 DELETE 
   	<delete id = "delTemp" parameterType="icia.js.hoonzzang.beans.GroupBean">
   		DELETE TEMP WHERE TEMP_GROUPNAME = #{groupName}
   	</delete>
+ -->
+  	
+  	<!-- ForEach, InsertAll, ... at 230112 -->
+  	
+  	<select id="isGroupName" parameterType="icia.js.hoonzzang.beans.GroupBean" resultType="int" >
+		SELECT COUNT(*) FROM DUPGROUPNAME WHERE GROUPNAME = #{groupName}
+	</select>
+	
+  	<select id="isStoreCode" parameterType="icia.js.hoonzzang.beans.GroupBean" resultType="int" >
+		SELECT COUNT(*) FROM ST WHERE ST_CODE = #{storeInfoList[0].storeCode}
+	</select>
+	
+	<select id="isEmpCode" parameterType="icia.js.hoonzzang.beans.GroupBean" resultType="int" >
+		SELECT COUNT(*) FROM SE WHERE SE_STCODE = #{storeInfoList[0].storeCode} AND SE_CODE = #{storeInfoList[0].empList[0].empCode}
+	</select>
+	
+	<select id="getEmpPinCode" parameterType="icia.js.hoonzzang.beans.GroupBean" resultType="string" >
+		SELECT SE_PIN FROM SE WHERE (SE_STCODE = #{storeInfoList[0].storeCode} AND SE_CODE = #{storeInfoList[0].empList[0].empCode}) AND SE_PIN = #{storeInfoList[0].empList[0].empPin}
+	</select>
+	
+	<insert id="insGroup" parameterType="icia.js.hoonzzang.beans.GroupBean" 
+					useGeneratedKeys="true" keyProperty="groupCode" keyColumn="SG_CODE">
+		INSERT INTO SG(SG_CODE, SG_NAME, SG_CEO, SG_PIN) 
+		VALUES('S'||GROUPCODE.NEXTVAL, #{groupName}, #{groupCeo}, #{groupPin})
+	</insert>
+	<insert id="insStore" parameterType="icia.js.hoonzzang.beans.GroupBean"> 
+		INSERT INTO ST(ST_CODE, ST_NAME, ST_ZIPCODE, ST_ADDR, ST_ADDRDETAIL, ST_PHONE, ST_SGCODE)  
+		VALUES(#{storeInfoList[0].storeCode}, #{storeInfoList[0].storeName}, #{storeInfoList[0].storeZip}, 
+				   #{storeInfoList[0].storeAddr}, #{storeInfoList[0].storeAddrDetail}, #{storeInfoList[0].storePhone}, #{groupCode})
+	</insert>
+	<update id="insCate" parameterType="icia.js.hoonzzang.beans.GroupBean">
+		<foreach collection="storeInfoList[0].cateList" item="record" open="INSERT ALL" separator=" " close='SELECT 1 FROM DUAL'>
+			INTO SC(SC_STCODE, SC_CODE, SC_NAME) 
+			VALUES(#{storeInfoList[0].storeCode}, #{record.levCode}, #{record.levName}) 
+		</foreach>
+	</update>
+	<insert id="insEmp" parameterType="icia.js.hoonzzang.beans.GroupBean">
+		<selectKey resultType="string" keyProperty="storeInfoList[0].empList[0].empCode" order="BEFORE">
+			SELECT 'E'||LPAD(TO_NUMBER(NVL(MAX(SUBSTR(SE_CODE, 2, 2)), '00'))+1,2,'0') AS MAXIDX 
+			FROM SE WHERE SE_STCODE = #{storeInfoList[0].storeCode}
+		</selectKey>
+		INSERT INTO SE(SE_STCODE, SE_CODE, SE_SCLEV, SE_NAME, SE_PIN, SE_SICODE)
+		VALUES(#{storeInfoList[0].storeCode}, #{storeInfoList[0].empList[0].empCode}, 
+					 #{storeInfoList[0].empList[0].empLevCode}, #{storeInfoList[0].empList[0].empName}, #{storeInfoList[0].empList[0].empPin}, NULL)
+	</insert>
+	<insert id="insTemp" parameterType="icia.js.hoonzzang.beans.GroupBean">
+		INSERT INTO TEMP(TEMP_GROUPNAME) VALUES(#{groupName})
+	</insert>
+	
+	<insert id="insAccessLog" parameterType="icia.js.hoonzzang.beans.GroupBean"
+	useGeneratedKeys="true" keyProperty="storeInfoList[0].empList[0].accessList[0].accessDate" keyColumn="AL_DATE">
+		INSERT INTO AL(AL_SESTCODE, AL_SECODE, AL_DATE, AL_IP, AL_TYPE, AL_PUBLICIP, AL_BROWSER, AL_STATE) VALUES(#{storeInfoList[0].storeCode}, #{storeInfoList[0].empList[0].empCode}, DEFAULT, #{storeInfoList[0].empList[0].accessList[0].accessLocation}, #{storeInfoList[0].empList[0].accessList[0].accessType}, #{storeInfoList[0].empList[0].accessList[0].accessPublicIp}, #{storeInfoList[0].empList[0].accessList[0].accessBrowser}, #{storeInfoList[0].empList[0].accessList[0].accessState})
+	</insert>
+	
+	<delete id="delTemp" parameterType="icia.js.hoonzzang.beans.GroupBean">
+		DELETE FROM TEMP WHERE TEMP_GROUPNAME = #{groupName}
+	</delete>
+  	
 </mapper>

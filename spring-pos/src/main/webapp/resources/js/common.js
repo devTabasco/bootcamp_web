@@ -10,15 +10,35 @@ document.onkeydown = function(event){
 };
 */
  /* PUBLIC IP 수집 */
-let publicIp;
-function getPublicIp(){
-	/* ajax:: get >>  https://api.ipify.org/format=json */ 
-	return "106.243.194.229";
+//let publicIp;
+//function getPublicIp(jsonData){
+	/* ajax:: get >>  https://api.ipify.org/format=json */
+//	return "106.243.194.229";
+//}
+
+function serverCallByFetchAjaxUsingUrl(jobCode, methodType, callBackFunc){
+	fetch(jobCode, {
+  	method: methodType,
+  	headers:{
+			'Content-Type': 'application/x-www-form-urlencoded'
+		},
+  }).then(response => response.json())
+		.then(jsonData => window[callBackFunc](jsonData))
+		.catch(error => {
+			console.log(error);
+			window[callBackFunc]('error');
+		})
+}
+
+ /* PUBLIC IP 수집 CallBackFunc */
+let publicIp = null;
+function getPublicIp(jsonData){
+	publicIp = jsonData.ip
 }
 
 /* Page Initialize */
 function pageInit(messageString, accessInfo){
-	publicIp = getPublicIp();
+	serverCallByFetchAjaxUsingUrl("https://api.ipify.org?format=json", "get", "getPublicIp");
 	
 	if(messageString != '') messageController(true, message); 
 	if(accessInfo != '') document.getElementById("accessInfo").innerText =	"로그아웃(Access Time : " + accessInfo.substr(8,2) + ":" + accessInfo.substr(10, 2) + ":" + accessInfo.substr(12, 2) + ")";
@@ -28,6 +48,7 @@ function pageInit(messageString, accessInfo){
 /* 메세지박스 제어 */
 function messageController(turn, messageString){
 	let message;
+	
 	const background = document.getElementById("background");
 	const title = document.getElementById("messageTitle");
 	const content = document.getElementById("messageContent");
@@ -41,8 +62,36 @@ function messageController(turn, messageString){
 		title.innerText = "";
 		content.innerText = "";
 		background.style.display = "none";
-		if(messageString != '') window[messageString]('Index','get','');
+		if(messageString != '')	{
+			message = messageString.split(":");
+			window[message[0]](message[1], message[2], message[3]);
+		}
 	}
+}
+
+function serverCallByFetchAjaxUsingUrl(jobCode, methodType, callBackFunc){
+	fetch(jobCode,{
+		method: methodType,
+		headers:{
+			'content-Type':'application/x-www-form-urlencoded'
+		},
+	}).then(response => response.json())
+	.then(jsonData=>window[callBackFunc](jsonData))
+	.catch(error => {
+		console.log(error);
+		window[callBackFunc]('error');
+	})
+}
+
+ /* 문자열이 JSON 데이터 타입인지 여부 */
+function isJsonString(str){
+	let result;
+	try {
+    result = (typeof JSON.parse(str) === 'object');
+  } catch (e) {
+    result = false;
+  }
+  return result;
 }
 
  /* 서버로 전송할 데이터 길이의 유효성 판단 */

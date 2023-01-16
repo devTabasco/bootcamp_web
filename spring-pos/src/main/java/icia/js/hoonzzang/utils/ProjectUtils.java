@@ -24,8 +24,13 @@ public class ProjectUtils {
 		return serviceCode * (isMobile(request)? -1 : 1);
 	}
 	
+	public String getHeaderInfo(boolean flag) {
+		HttpServletRequest req = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+		return (flag)? req.getRemoteAddr() : req.getHeader("user-agent");
+	}
 	
 	private boolean isMobile(HttpServletRequest request){
+		//springboot에서 지원해주는 method
 		return DeviceUtils.getCurrentDevice(request).isMobile();
 	}
 

@@ -2,7 +2,6 @@
  * 인증 전 사용할 자바스크립트
  */
 const jsonString = '';
-alert("json!");
 
 /* HttpRequest를 이용한 서버 요청
 		clientData format : [['name', 'value'], ...]
@@ -277,22 +276,26 @@ function movePage(target){
 
 function access(){
 	const form = createForm("", "Access", "post");
-	const inputZone = document.getElementById("inputZone");
+	const inputZone = document.getElementsByClassName("inputZone")[0];
 	const communicationBox = document.getElementsByClassName("communicationBox")[0];
 	const message = ["매장코드 형식을 확인하세요.", "직원코드 형식을 확인하세요.", "핀번호 형식을 확인하세요"];
 	let isSubmit;
 		
 	for(let idx=0; idx<inputZone.children.length; idx++){
-		isSubmit = lengthCheck(inputZone.children[idx])
+		isSubmit = lengthCheck(inputZone.children[idx]);
 		if(!isSubmit)	{
 			inputZone.children[idx].value = "";
 			inputZone.children[idx].setAttribute("placeholder", message[idx]);
 			inputZone.children[idx].focus();
 			break;
+		}else{
+			if(idx == 0) inputZone.children[0].setAttribute("name","storeInfoList[0]."+inputZone.children[0].getAttribute("name"));
+			if(idx == 1) inputZone.children[1].setAttribute("name","storeInfoList[0].empList[0]."+inputZone.children[1].getAttribute("name"));
+			if(idx == 2) inputZone.children[2].setAttribute("name","storeInfoList[0].empList[0]."+inputZone.children[2].getAttribute("name"));
 		}
 	}
 	
-	const hidden = createInputBox("hidden", "accessPublicIp", publicIp, "");
+	const hidden = createInputBox("hidden", "storeInfoList[0].empList[0].accessList[0].accessPublicIp", publicIp, "");
 	form.appendChild(inputZone);
 	form.appendChild(hidden);
 	communicationBox.appendChild(form);
