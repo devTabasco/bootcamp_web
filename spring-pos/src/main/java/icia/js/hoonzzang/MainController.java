@@ -47,7 +47,6 @@ public class MainController {
 	public ModelAndView memberJoin(ModelAndView mav, @RequestHeader("User-Agent") String browser, @ModelAttribute GroupBean group) {
 		mav.addObject("group",group);
 		auth_json.backController(1, mav);
-		log.info("{}", (GroupBean)mav.getModel().get("group"));
 		log.info("-----로그인 처리-----");
 		return mav;
 	}

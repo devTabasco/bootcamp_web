@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="icia.js.hoonzzang.mapper.AuthMapperInter">
+	<resultMap id="getAccessInfo" type="icia.js.hoonzzang.beans.GroupBean">
+		<id property="groupCode" column="GROUPCODE" />
+		<collection property="storeInfoList" column="GROUPCODE" javaType="java.util.ArrayList" ofType="icia.js.hoonzzang.beans.StoreBean" select="storeInfo" />
+	</resultMap>
+	<!-- 하위쿼리에 여러개의 컬럼을 전달해야 하는 경우 
+				resultmapt >>> column="{col, col}"   해당쿼리의 parameterType = "java.util.HashMap"
+	-->
+	<!-- Group Info -->
+	<select id="getGroupInfo" parameterType="icia.js.hoonzzang.beans.GroupBean" resultMap="getAccessInfo">
+		SELECT SG_CODE AS GROUPCODE, SG_NAME AS GROUPNAME, SG_CEO AS GROUPCEO 
+		FROM WEBDBA.SG 
+		WHERE SG_CODE = (SELECT ST_SGCODE FROM WEBDBA.ST WHERE ST_CODE=#{storeInfoList[0].storeCode})
+	</select>
+	
+	<!-- Store Info -->
+	<select id="storeInfo" parameterType="string" resultType="icia.js.hoonzzang.beans.StoreBean">
+		SELECT ST_CODE AS STORECODE, ST_NAME AS STORENAME, ST_ZIPCODE AS STOREZIP, 
+					 ST_ADDR AS STOREADDR, ST_ADDRDETAIL AS STOREADDRDETAIL, ST_PHONE AS STOREPHONE, 
+					 ST_SICODE AS STOREIMAGECODE 
+		FROM WEBDBA.ST WHERE ST_SGCODE = #{groupCode}
+	</select>
+	
+	<!-- Employee Info -->
+	<select id="empInfo" parameterType="icia.js.hoonzzang.beans.StoreBean" resultType="icia.js.hoonzzang.beans.EmployeesBean">
+		SELECT SE_CODE AS EMPCODE, SE_PIN AS EMPPIN, SE_SCLEV AS EMPLEVCODE, SC_NAME AS EMPLEVNAME, 
+					 SE_NAME AS EMPNAME, SE_SICODE AS EMPIMGCODE
+		FROM WEBDBA.SE SE INNER JOIN WEBDBA.SC SC
+			ON SE.SE_STCODE = SC.SC_STCODE AND SE.SE_SCLEV = SC.SC_CODE 
+		WHERE SE_STCODE = #{storeCode} AND SE_CODE = #{empList[0].empCode} 
+	</select>
+	
+	<!-- 로그인 관련 -->
+	<select id="getEmpPin" parameterType="icia.js.hoonzzang.beans.StoreBean" resultType="string">
+		SELECT SE_PIN FROM WEBDBA.SE 
+		WHERE SE_STCODE = #{storeCode} 
+		  AND SE_CODE = #{empList[0].empCode} 
+	</select>
+	
+	<insert id="insAccessLog" parameterType="icia.js.hoonzzang.beans.StoreBean" 
+				useGeneratedKeys="true" keyProperty="empList[0].accessList[0].accessDate" keyColumn="AL_DATE">
+		INSERT INTO WEBDBA.AL(AL_SESTCODE, AL_SECODE, AL_DATE, AL_IP, 
+					 AL_PUBLICIP, AL_TYPE, AL_BROWSER, AL_STATE) 
+		VALUES(#{storeCode}, #{empList[0].empCode}, DEFAULT, 
+					 #{empList[0].accessList[0].accessLocation}, 
+					 #{empList[0].accessList[0].accessPublicIp}, 
+					 #{empList[0].accessList[0].accessType}, 
+					 #{empList[0].accessList[0].accessBrowser}, 
+					 #{empList[0].accessList[0].accessState})
+	</insert>
+	<select id="isGroupName" parameterType="icia.js.hoonzzang.beans.GroupBean" resultType="int" >
+		SELECT COUNT(*) FROM WEBDBA.DUPGROUPNAME WHERE GROUPNAME = #{groupName}
+	</select>
+	<select id="isStoreCode" parameterType="icia.js.hoonzzang.beans.GroupBean" resultType="int" >
+		SELECT COUNT(*) FROM WEBDBA.ST WHERE ST_CODE = #{storeInfoList[0].storeCode}
+	</select>
+	<insert id="insGroup" parameterType="icia.js.hoonzzang.beans.GroupBean" 
+					useGeneratedKeys="true" keyProperty="groupCode" keyColumn="SG_CODE">
+		INSERT INTO WEBDBA.SG(SG_CODE, SG_NAME, SG_CEO, SG_PIN) 
+		VALUES('S'||WEBDBA.GROUPCODE.NEXTVAL, #{groupName}, #{groupCeo}, #{groupPin})
+	</insert>
+	<insert id="insStore" parameterType="icia.js.hoonzzang.beans.GroupBean"> 
+		INSERT INTO WEBDBA.ST(ST_CODE, ST_NAME, ST_ZIPCODE, ST_ADDR, ST_ADDRDETAIL, ST_PHONE, ST_SGCODE)  
+		VALUES(#{storeInfoList[0].storeCode}, #{storeInfoList[0].storeName}, #{storeInfoList[0].storeZip}, 
+				   #{storeInfoList[0].storeAddr}, #{storeInfoList[0].storeAddrDetail}, #{storeInfoList[0].storePhone}, #{groupCode})
+	</insert>
+	<insert id="insCate" parameterType="icia.js.hoonzzang.beans.GroupBean">
+		<foreach collection="storeInfoList[0].cateList" item="record" open="INSERT ALL" separator=" " close='SELECT 1 FROM DUAL'>
+			INTO WEBDBA.SC(SC_STCODE, SC_CODE, SC_NAME) 
+			VALUES(#{storeInfoList[0].storeCode}, #{record.levCode}, #{record.levName}) 
+		</foreach>		
+	</insert>
+	<insert id="insEmp" parameterType="icia.js.hoonzzang.beans.GroupBean">
+		<selectKey resultType="string" keyProperty="storeInfoList[0].empList[0].empCode" order="BEFORE">
+			SELECT 'E' || (TO_NUMBER(NVL(MAX(SUBSTR(SE_CODE, 2, 2)), '10')) + 1) AS MAXIDX 
+			FROM WEBDBA.SE WHERE SE_STCODE = #{storeInfoList[0].storeCode}
+		</selectKey>
+		INSERT INTO WEBDBA.SE(SE_STCODE, SE_CODE, SE_SCLEV, SE_NAME, SE_PIN, SE_SICODE) 
+		VALUES(#{storeInfoList[0].storeCode}, #{storeInfoList[0].empList[0].empCode}, 
+					 #{storeInfoList[0].empList[0].empLevCode}, #{storeInfoList[0].empList[0].empName}, #{storeInfoList[0].empList[0].empPin}, NULL)
+	</insert>
+	<insert id="insTemp" parameterType="icia.js.hoonzzang.beans.GroupBean">
+		INSERT INTO WEBDBA.TEMP(TEMP_GROUPNAME) VALUES(#{groupName})
+	</insert>
+	<delete id="delTemp" parameterType="icia.js.hoonzzang.beans.GroupBean">
+		DELETE FROM WEBDBA.TEMP WHERE TEMP_GROUPNAME = #{groupName}
+	</delete>
+</mapper>

@@ -5,6 +5,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -22,16 +23,18 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.qos.logback.core.joran.conditional.IfAction;
 import icia.js.hoonzzang.beans.EmployeesBean;
 import icia.js.hoonzzang.SimpleTransactionManager;
+import icia.js.hoonzzang.beans.AccessLogBean;
 import icia.js.hoonzzang.beans.CategoriesBean;
 import icia.js.hoonzzang.beans.GroupBean;
 import icia.js.hoonzzang.beans.StoreBean;
 import icia.js.hoonzzang.utils.*;
 import lombok.extern.slf4j.Slf4j;
+import icia.js.hoonzzang.TransactionAssistant;
 
 /* Authentication + Memeber Join*/
 @Service
 @Slf4j
-public class Authentication_json {
+public class Authentication_json extends TransactionAssistant {
 	@Autowired
 	private Encryption enc;
 	@Autowired
@@ -77,19 +80,55 @@ public class Authentication_json {
 		String page = "index"; 
 		
 		if(this.convertToBoolean(this.session.selectOne("isStoreCode",group))) {
-			if(convertToBoolean(this.session.selectOne("isEmpCode",group))) {
+			List<EmployeesBean> emp	= this.session.selectList("empInfo",group.getStoreInfoList().get(0));
+			ArrayList<EmployeesBean> empList = (ArrayList<EmployeesBean>)emp;
+			if(empList != null) {
 				if(enc.matches(group.getStoreInfoList().get(0).getEmpList().get(0).getEmpPin(), this.session.selectOne("getEmpPinCode",group)));
 				System.out.println("matches성공!");
 				
 				try {
+					// Transaction 1.
+					this.tranManager = getTransaction(false);
+					// Transaction 2.
+					this.tranManager.tranStart();
 					if(utils.getAttribute("AccessInfo") == null) {
-						group.getStoreInfoList().get(0).getEmpList().get(0).getAccessList().get(0).setAccessLocation(utils.getHeaderInfo(true));
-						group.getStoreInfoList().get(0).getEmpList().get(0).getAccessList().get(0).setAccessBrowser(ClientInfo.getBrowserInfo(utils.getHeaderInfo(false)));;
-						group.getStoreInfoList().get(0).getEmpList().get(0).getAccessList().get(0).setAccessType(1);
-						group.getStoreInfoList().get(0).getEmpList().get(0).getAccessList().get(0).setAccessState("R");
-						this.session.insert("insAccessLog",group);
-						utils.setAttribute("AccessInfo",group);
-						System.out.println("insert 성공!");
+						ArrayList<AccessLogBean> accessLog = group.getStoreInfoList().get(0).getEmpList().get(0).getAccessList();
+						accessLog.get(0).setAccessLocation(utils.getHeaderInfo(true));
+						accessLog.get(0).setAccessBrowser(ClientInfo.getBrowserInfo(utils.getHeaderInfo(false)));;
+						accessLog.get(0).setAccessType(1);
+						accessLog.get(0).setAccessState("R");
+						if(convertToBoolean(this.session.insert("insAccessLog",group))) {
+							this.tranManager.commit();
+							System.out.println("insert 성공!");
+							
+							List<GroupBean> arrayList = this.sqlSession.selectList("getGroupInfo",group);
+							
+//							List<EmployeesBean> empList = null;
+//							ArrayList<EmployeesBean> empArrayList = null;
+//							empList = (this.sqlSession.selectList("empInfo",group.getStoreInfoList().get(0)));
+//							empArrayList = (ArrayList<EmployeesBean>)empList;
+							group = (GroupBean)(arrayList.get(0));
+							group.getStoreInfoList().get(0).setEmpList(empList);
+							group.getStoreInfoList().get(0).getEmpList().get(0).setAccessList(accessLog);
+							
+							//비밀번호 삭제
+							group.getStoreInfoList().get(0).getEmpList().get(0).setEmpPin(null);
+							
+							//EMPNAME복호화
+							String decString = null;
+							try {
+								decString = enc.aesDecode(group.getGroupCeo(), group.getStoreInfoList().get(0).getStoreCode() + group.getGroupName());
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							group.setGroupCeo(decString);
+							group.getStoreInfoList().get(0).getEmpList().get(0).setEmpName(decString);
+							
+							
+							log.info("{}",group);
+//							log.info("{}",empList.get(0).getEmpName().toString());
+							utils.setAttribute("AccessInfo",group);
+						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -97,19 +136,16 @@ public class Authentication_json {
 					page = "main";
 					mav.setViewName("main");					
 				}
-				
-				log.info("{}",group.getStoreInfoList().get(0).getEmpList().get(0).getAccessList());
-				
+			
 			}
 		}
-		
-		
 	}
 
 	/* Registration */
 	@Transactional
 	private void groupRegistration(Model model) {
 		GroupBean group = (GroupBean) model.getAttribute("group");
+		String message = "그룹등록 오류:죄송합니다.\n예기치 않은 오류가 발생하였습니다.\n 잠시 후 다시 시도해 주세요";
 
 		/* AES 암호화 처리 */
 		try {
@@ -126,41 +162,41 @@ public class Authentication_json {
 		group.setGroupPin(encPassword);
 		group.getStoreInfoList().get(0).getEmpList().get(0).setEmpPin(encPassword);
 
-		this.session.insert("insGroup", group);
-		this.session.insert("insStore", group);
-		this.session.update("insCate", group);
-		this.session.insert("insEmp", group);
-		
-//		try {
-//			this.tranManager = getTransaction(false);
-//			this.tranManager.tranStart();
-//			
-//			if(this.convertToBoolean(this.sqlSession.insert("insGroup", group))){
-//				//group.getStoreInfoList().get(0).setStoreCode("1234567890");
-//				if(this.convertToBoolean(this.sqlSession.insert("insStore", group))) {
-//					if(this.convertToBoolean(this.sqlSession.insert("insCate", group))){
-//						if(this.convertToBoolean(this.sqlSession.insert("insEmp", group))) {
-//							this.tranManager.commit();
-//						}else {group.setMessage(message);}
-//					}else {group.setMessage(message);}
-//				}else {group.setMessage(message);}
-//			}else {group.setMessage(message);}
-//		}catch(Exception e) {this.tranManager.rollback();
-//		}finally {
-//			this.tranManager.tranEnd();
-//			this.deleteTempGroupName(model, true);
-//		}
-		
-		/* AES 복호화 */
-		String decString = null;
 		try {
-			decString = enc.aesDecode(group.getGroupCeo(), group.getStoreInfoList().get(0).getStoreCode() + group.getGroupName());
-		} catch (Exception e) {
-			e.printStackTrace();
+		// Transaction 1.
+		this.tranManager = getTransaction(false);
+		// Transaction 2.
+		this.tranManager.tranStart();
+		
+		if(this.convertToBoolean(this.session.insert("insGroup", group))) {
+			if(this.convertToBoolean(this.session.insert("insStore", group))) {
+				if(this.convertToBoolean(this.session.update("insCate", group))) {
+					if(this.convertToBoolean(this.session.insert("insEmp", group))) {
+						// Transaction 3.
+						this.tranManager.commit();
+					}else {group.setMessage(message);}
+				}else {group.setMessage(message);}
+			}else {group.setMessage(message);}	
+		}else {group.setMessage(message);}
+		}catch(Exception e) {
+			// Transaction 4.
+			this.tranManager.rollback();
+		}finally {
+			// Transaction 5.
+			this.tranManager.tranEnd();
+			this.deleteTempGroupName(model, true);
 		}
+		
+//		/* AES 복호화 - empName */
+//		String decString = null;
+//		try {
+//			decString = enc.aesDecode(group.getGroupCeo(), group.getStoreInfoList().get(0).getStoreCode() + group.getGroupName());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 
-		group.setGroupCeo(decString);
-		this.deleteTempGroupName(model, true);
+//		group.setGroupCeo(decString);
+//		this.deleteTempGroupName(model, true);
 		
 		
 	}

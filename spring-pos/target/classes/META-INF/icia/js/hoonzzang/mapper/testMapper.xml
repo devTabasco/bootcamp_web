@@ -42,6 +42,65 @@
  -->
   	
   	<!-- ForEach, InsertAll, ... at 230112 -->
+  	<!-- resultMap id = "getAccessInfo" type="">
+  		<id property="groupCode" column="GroupCode" />
+  		< storeInfoList에 groupCode 전달>
+  		<collection property = "storeInfoList" column="GROUPCODE" javaType="java.util.ArrayList" ofType="icia.js.hoonzzang.beans.StoreBean" select="storeInfo" >
+  			<id property="storeCode" column = "STORECODE"  javaType="java.util.ArrayList" ofType="icia.js.hoonzzang.beans.EmployeeBean" select="storeInfo"  />
+  			<collection property="empList">
+  				<id property="empCode" column="EMPCODE" />
+  			</collection>
+  		</collection>
+  	</resultMap-->
+  	
+  	<resultMap id="getAccessInfo" type="icia.js.hoonzzang.beans.GroupBean">
+		<id property="groupCode" column="GROUPCODE" />
+		<collection property="storeInfoList" column="GROUPCODE" javaType="java.util.ArrayList" ofType="icia.js.hoonzzang.beans.StoreBean" select="storeInfo">
+			<id property="storeCode" column = "STORECODE"/>
+			<!-- collection property="storeInfoList[0].empList" column="STORECODE" javaType="java.util.ArrayList" ofType="icia.js.hoonzzang.beans.EmployeesBean" select="empInfo" /-->
+  				<!-- id property="empCode" column="EMPCODE" /-->
+  		</collection>
+	</resultMap>
+	
+	<!-- resultMap id="getStoreInfo" type="icia.js.hoonzzang.beans.StoreBean">
+		<id property="storeCode" column="STORECODE" />
+		<collection property="empList" column="STORECODE" javaType="java.util.ArrayList" ofType="icia.js.hoonzzang.beans.EmployeesBean" select="empInfo" >
+			<id property="empCode" column = "EMPCODE" />
+		</collection>		
+	</resultMap-->
+	<!-- 
+		여러개의 컬럼을 전달하는 경우
+		resultmapt >> column="{col, col}" 해당 쿼리의 parameterType = "java.util.HashMap"
+	 -->
+
+	<!-- Group Info -->
+	<select id="getGroupInfo" parameterType="icia.js.hoonzzang.beans.GroupBean" resultMap="getAccessInfo">
+		SELECT SG_CODE AS GROUPCODE, SG_NAME AS GROUPNAME, SG_CEO AS GROUPCEO 
+		FROM SG 
+		WHERE SG_CODE = (SELECT ST_SGCODE FROM ST WHERE ST_CODE=#{storeInfoList[0].storeCode})
+	</select>
+	<!-- Store Info -->
+	<select id="storeInfo" parameterType="string" resultType="icia.js.hoonzzang.beans.StoreBean" >
+		SELECT ST_CODE AS STORECODE, ST_NAME AS STORENAME, ST_ZIPCODE AS STOREZIP, 
+					 ST_ADDR AS STOREADDR, ST_ADDRDETAIL AS STOREADDRDETAIL, ST_PHONE AS STOREPHONE, 
+					 ST_SICODE AS STOREIMAGECODE 
+		FROM ST WHERE ST_SGCODE = #{groupCode}
+	</select>
+	
+	<!-- select id="getStoreInfo" parameterType="icia.js.hoonzzang.beans.StoreBean" resultMap="getStoreInfo" >
+		SELECT ST_CODE AS STORECODE, ST_NAME AS STORENAME, ST_ZIPCODE AS STOREZIP, 
+					 ST_ADDR AS STOREADDR, ST_ADDRDETAIL AS STOREADDRDETAIL, ST_PHONE AS STOREPHONE, 
+					 ST_SICODE AS STOREIMAGECODE 
+		FROM ST WHERE ST_CODE = #{storeCode}
+	</select-->
+	<!-- Employee Info -->
+	<select id="empInfo" parameterType="icia.js.hoonzzang.beans.StoreBean" resultType="icia.js.hoonzzang.beans.EmployeesBean" >
+		SELECT SE_CODE AS EMPCODE, SE_PIN AS EMPPIN, SE_SCLEV AS EMPLEVCODE, SC_NAME AS EMPLEVNAME, 
+					 SE_NAME AS EMPNAME, SE_SICODE AS EMPIMGCODE
+		FROM SE INNER JOIN SC
+			ON SE.SE_STCODE = SC.SC_STCODE AND SE.SE_SCLEV = SC.SC_CODE 
+		WHERE SE_STCODE = #{storeCode} AND SE_CODE = #{empList[0].empCode} 
+	</select>
   	
   	<select id="isGroupName" parameterType="icia.js.hoonzzang.beans.GroupBean" resultType="int" >
 		SELECT COUNT(*) FROM DUPGROUPNAME WHERE GROUPNAME = #{groupName}
