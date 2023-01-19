@@ -51,6 +51,16 @@ public class MainController {
 		return mav;
 	}
 	
+//	@GetMapping("/PosService")
+//	//RequestHeader : request의 Header를 가져오는 annotation.
+//	public ModelAndView PosService(ModelAndView mav, @ModelAttribute GroupBean group) {
+//		log.info("-----테스트-----");
+//		mav.setViewName("index");
+//		return mav;
+//	}
+	
+	/* 아래부터는 토큰 확인 */
+	
 	@GetMapping("/goMgr")
 	public String goMgr() {
 		return "mgr";

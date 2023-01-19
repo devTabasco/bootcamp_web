@@ -26,6 +26,7 @@ import icia.js.hoonzzang.SimpleTransactionManager;
 import icia.js.hoonzzang.beans.AccessLogBean;
 import icia.js.hoonzzang.beans.CategoriesBean;
 import icia.js.hoonzzang.beans.GroupBean;
+import icia.js.hoonzzang.beans.JwtTokenBean;
 import icia.js.hoonzzang.beans.StoreBean;
 import icia.js.hoonzzang.utils.*;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,8 @@ public class Authentication_json extends TransactionAssistant {
 	@Autowired
 	private ProjectUtils utils;
 	private SimpleTransactionManager tranManager;
+	@Autowired
+	private JsonWebTokenService jwts;
 
 	public Authentication_json() {
 
@@ -135,6 +138,22 @@ public class Authentication_json extends TransactionAssistant {
 				}finally {
 					page = "main";
 					mav.setViewName("main");					
+				}
+				
+				JwtTokenBean tokenBody = new JwtTokenBean();
+				tokenBody.setStoreCode(group.getStoreInfoList().get(0).getStoreCode());
+				tokenBody.setEmpCode(group.getStoreInfoList().get(0).getEmpList().get(0).getEmpCode());
+				tokenBody.setEmpLevCode(group.getStoreInfoList().get(0).getEmpList().get(0).getEmpLevCode());
+				
+				String token = jwts.tokenIssuance(tokenBody, group.getGroupCode());
+				
+				log.info("{}",token);
+				
+				try {
+					log.info("{}",jwts.tokenExpiredDateCheck(token, group.getGroupCode()));
+					log.info("{}",jwts.getTokenInfo(token, group.getGroupCode()));
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			
 			}

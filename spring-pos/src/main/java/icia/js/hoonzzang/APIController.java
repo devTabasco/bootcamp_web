@@ -61,6 +61,7 @@ public class APIController {
 
 		return (GroupBean)model.getAttribute("group");
 	}
+	
 	@PostMapping("/DelTempGroupName")
 	public GroupBean delTempGroupName(Model model, @ModelAttribute GroupBean group) {
 		model.addAttribute("group", group);
@@ -68,6 +69,7 @@ public class APIController {
 		
 		return (GroupBean)model.getAttribute("group");
 	}
+	
 	@PostMapping("/GroupRegistration")
 	public GroupBean groupRegistration(Model model, @RequestBody GroupBean group) {
 		model.addAttribute("group", group);

@@ -24,6 +24,29 @@
 	<!-- Multipart Resolver -->
 	<beans:bean id="multi" class="org.springframework.web.multipart.support.StandardServletMultipartResolver"></beans:bean>
 	
+	<!-- mvc:Interceptor -->
+	<interceptors>
+		<interceptor>
+			<mapping path="/**" />
+			<!-- 예외 항목 등록 -->
+			<exclude-mapping path="/JoinStep" />
+			<exclude-mapping path="/Access" />
+			<exclude-mapping path="/Index" />
+			<exclude-mapping path="/" />
+			<exclude-mapping path="/resources/**" />
+			<beans:bean id="Interceptor" class="icia.js.hoonzzang.utils.JwtIntercepter" />
+		</interceptor>
+	</interceptors>
+	
+	<!-- mvc:cors -->
+	<cors>
+		<mapping path="/**"
+				allowed-origins="*"
+				allowed-methods="*"
+				allowed-headers="*"
+				exposed-headers="JWTForJSFramework" />
+	</cors>
+	
 	<context:component-scan base-package="icia.js.hoonzzang" />
 	
 </beans:beans>
